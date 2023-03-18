@@ -346,24 +346,27 @@ function showEndScreen() {
 }
 
 function keyboardControlsManager(e) {
+    if(!isPaused) {
+        switch (e.keyCode) {
+            case 37: // Arrow Left
+            case 65: // A
+                moveLeft();
+                break;     
+            case 38: // Arrow Up
+            case 87: // W
+                moveUp();
+                break;
+            case 39:  // Arrow Right
+            case 68:  // D
+                moveRight();
+                break;
+            case 40:  // Arrow Down
+            case 83:  // S
+                moveDown();
+                break;
+        }
+    }
     switch (e.keyCode) {
-        case 37: // Arrow Left
-        case 65: // A
-            if(!isPaused) moveLeft();
-            break;
-            
-        case 38: // Arrow Up
-        case 87: // W
-            if(!isPaused) moveUp();
-            break;
-        case 39:  // Arrow Right
-        case 68:  // D
-            if(!isPaused) moveRight();
-            break;
-        case 40:  // Arrow Down
-        case 83:  // S
-            if(!isPaused) moveDown();
-            break;
         case 27: // Esc
         case 80: // P
             togglePause();
