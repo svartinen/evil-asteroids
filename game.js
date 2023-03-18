@@ -2,7 +2,9 @@ var character;
 var hp;
 var score;
 var projectileList;
+var projectileListIndex;
 var enemyList;
+var enemyListIndex;
 var isPaused;
 var enemyInterval;
 
@@ -16,11 +18,13 @@ function startGame() {
     character = new component(170, 170, 30, 30, playerAsset, offsetX=0, offsetY=0, speed=10, type=imageAsset);  
     gameArea.start();
     
-    // Set the global variables:
+    // Set the global variables (i.e. game flags):
     hp = 100;
     score = 0;
     projectileList = {};
+    projectileListIndex = 0;
     enemyList = {};
+    enemyListIndex = 0;
     isPaused = false;
     
     // Set up the event listeners for controls:
@@ -28,11 +32,11 @@ function startGame() {
     document.addEventListener('click', mouseControlsManager);
     
     // Set up the pause menu and hide it for now:
-    var continueGame = document.getElementById("continueGame");
+    let continueGame = document.getElementById("continueGame");
     continueGame.style.display = "block";
-    var gameOver = document.getElementById("gameOver");
+    let gameOver = document.getElementById("gameOver");
     gameOver.style.display = "none";
-    var menu = document.getElementById("mainMenu");
+    let menu = document.getElementById("mainMenu");
     menu.style.display = "none";
     menu.style.background = "rgba(0,0,0,0.5)";
     
@@ -43,10 +47,11 @@ function startGame() {
     requestAnimationFrame(updateGameArea);
 }
 
+// A black canvas which works as the game area
 var gameArea = {
     canvas: document.getElementById('gameWindow'),
     start: function() { 
-        // Scale the game area to the current viewport:
+        // Scale the game area to the current viewport and display it:
         this.canvas.width = window.innerWidth * 0.9;
         this.canvas.height = window.innerHeight * 0.9;
         this.canvas.style.display = "inline";
@@ -61,7 +66,7 @@ var gameArea = {
     }
 }
 
-// Object manager for entities on game area:
+// Manages the entities on the game area, 'color' is either a named color or an image path as dictated by param 'type'
 function component(x, y, width, height, color, offsetX=0, offsetY=0, speed=1, type, angle=0) {
     this.type = type;
     this.color = color;
@@ -81,12 +86,13 @@ function component(x, y, width, height, color, offsetX=0, offsetY=0, speed=1, ty
     this.update = function() {
         ctx = gameArea.context;
         ctx.save();
+        // Rotate the component according to its angle (for instance, projectiles should point toward the direction they are moving)
         if (angle != 0) {
-            var rot_x = this.x + 0.5 * this.width;
-            var rot_y = this.y + 0.5 * this.height;
-            ctx.translate(rot_x, rot_y);
+            let rotX = this.x + 0.5 * this.width;
+            let rotY = this.y + 0.5 * this.height;
+            ctx.translate(rotX, rotY);
             ctx.rotate(this.angle);
-            ctx.translate(-rot_x, -rot_y);
+            ctx.translate(-rotX, -rotY);
         }
         
         if (this.type == imageAsset) {
@@ -103,10 +109,10 @@ function component(x, y, width, height, color, offsetX=0, offsetY=0, speed=1, ty
         ctx.restore();
     }
     
-    // Move to offset directions if area bounds are not hit:
+    // Move to offset directions if the area bounds are not hit:
     this.newPos = function() {
-        var newX = this.x + (this.offsetX * speed);
-        var newY = this.y + (this.offsetY * speed);
+        let newX = this.x + (this.offsetX * speed);
+        let newY = this.y + (this.offsetY * speed);
         if(newX < gameArea.canvas.width - this.width && newX >= 0) {
             this.x = newX;
         }
@@ -118,23 +124,25 @@ function component(x, y, width, height, color, offsetX=0, offsetY=0, speed=1, ty
     }    
 }
 
-// Test whether two rectangles collide. Returns true if they do. 
+// Tests whether two component rectangles collide. Returns true if they do. 
 function testCollision(c1, c2) {
-    var x1 = c1.x - c1.width / 2;
-    var y1 = c1.y - c1.height / 2;
+    let x1 = c1.x - c1.width / 2;
+    let y1 = c1.y - c1.height / 2;
     
-    var x2 = c2.x - c2.width / 2;
-    var y2 = c2.y - c2.height / 2;
+    let x2 = c2.x - c2.width / 2;
+    let y2 = c2.y - c2.height / 2;
     
     return x1 <= x2 + c2.width && x2 <= x1 + c1.width && y1 <= y2 + c2.height && y2 <= y1 + c1.height; 
 }
 
-// Object manager for shootable projectiles
-function projectile(id, x, y, width, height, offsetX=0, offsetY=0, speed=10, color='red', angle=0) {
+// Object manager for the projectiles shot by the player
+function projectile(x, y, width, height, offsetX=0, offsetY=0, speed=10, color='red', angle=0) {
     this.component = new component(x, y, width, height, color, offsetX, offsetY, speed, color, angle);
-    this.id = id;
+    this.id = projectileListIndex;
+    projectileListIndex++;
     
-    projectileList[id] = this;
+    projectileList[this.id] = this;
+    
     
     this.update = function() {
         this.component.update();
@@ -153,33 +161,34 @@ function projectile(id, x, y, width, height, offsetX=0, offsetY=0, speed=10, col
     }
 }
 
-// Returns a unit vector [x, y] that shows which way you should go from the point (x, y) to end up in the point (targetX, targetY)  
+// Returns a unit vector [dirX, dirY] that shows which way you should go from the point (x, y) to end up in the point (targetX, targetY)  
 function calculateDirection(x, y, targetX, targetY) {
     // Calculate direction vector:
-    var offsetX = targetX - x;
-    var offsetY = targetY - y;
-    var length = Math.sqrt(offsetX * offsetX + offsetY * offsetY);
+    let offsetX = targetX - x;
+    let offsetY = targetY - y;
+    let length = Math.sqrt(offsetX * offsetX + offsetY * offsetY);
     
     return [offsetX / length, offsetY / length];
 }
 
-// Generate a new pojectile that starts at the player player position and advances toward the point (targetX, targetY) 
+// Generates a new pojectile that starts at the player player position and advances toward the point (targetX, targetY) 
 function generateProjectileFromCharacter(targetX, targetY){
-    var height = 5;
-    var width = 25;
-    var id = Math.random();
+    let height = 5;
+    let width = 25;
     
-    var dir = calculateDirection(character.x, character.y, targetX, targetY);
-    var radAngle = Math.atan2(dir[1], dir[0]);
+    let dir = calculateDirection(character.x, character.y, targetX, targetY);
+    let radAngle = Math.atan2(dir[1], dir[0]);
     
-    new projectile(id, character.x, character.y, width, height, dir[0], dir[1], 10, 'red', radAngle);
+    new projectile(character.x, character.y, width, height, dir[0], dir[1], 10, 'red', radAngle);
 }
 
-function enemy(id, x, y, width, height, offsetX=0, offsetY=0, speed=1, color='green', type, angle) {
+// Object manager for the enemy asteroids
+function enemy(x, y, width, height, offsetX=0, offsetY=0, speed=1, color='green', type, angle) {
     this.component = new component(x, y, width, height, color, offsetX, offsetY, speed, type, angle);
-    this.id = id;
+    this.id = enemyListIndex;
+    enemyListIndex++;
     
-    enemyList[id] = this;
+    enemyList[this.id] = this;
     
     this.update = function() {
         this.component.update();
@@ -187,20 +196,20 @@ function enemy(id, x, y, width, height, offsetX=0, offsetY=0, speed=1, color='gr
     
     // Move toward the player character
     this.newPos = function() {
-        var dir = calculateDirection(this.component.x, this.component.y, character.x, character.y);
+        let dir = calculateDirection(this.component.x, this.component.y, character.x, character.y);
         
         this.component.x += dir[0] * speed;
         this.component.y += dir[1] * speed;
     }
 }
 
-// Generate a slightly randomized enemy asteroid: 
+// Generates a slightly randomized enemy asteroid: 
 function generateEnemy(speed=1, color, type) {
-    var height = 20 + Math.random() * 50;
-    var width = 20 + Math.random() * 50;
+    let height = 20 + Math.random() * 50;
+    let width = 20 + Math.random() * 50;
     
     // The enemy appears at a random edge of the game area:
-    var x, y;
+    let x, y;
     switch(Math.round(Math.random() * 3)) {
         case 0:
             x = Math.random() * gameArea.canvas.width;
@@ -220,11 +229,10 @@ function generateEnemy(speed=1, color, type) {
             break;
     }
     
-    var id = Math.random();
-    var speed = Math.random() * 2;
-    var angle = Math.random() * Math.PI * 2
+    let randomizedSpeed = Math.random() * 2 + speed;
+    let angle = Math.random() * Math.PI * 2;
     
-    new enemy(id, x, y, width, height, 0, 0, speed, color, type, angle);   
+    new enemy(x, y, width, height, 0, 0, randomizedSpeed, color, type, angle);   
 }
 
 function updateGameArea() {
@@ -233,14 +241,14 @@ function updateGameArea() {
         character.newPos();    
         character.update();
     
-        for(var key in projectileList){
-            var projectile = projectileList[key];
+        for(let key in projectileList){
+            let projectile = projectileList[key];
             projectile.newPos();
             projectile.update();
         }
     
-        for(var key in enemyList){
-            var enemy = enemyList[key];
+        for(let key in enemyList){
+            let enemy = enemyList[key];
             enemy.newPos();
             enemy.update();
             if(testCollision(character, enemy.component)) {
@@ -248,11 +256,11 @@ function updateGameArea() {
             }
         } 
         
-        for(var key in projectileList){
-            var projectile = projectileList[key];
-            var collision = false;
-            for(var key in enemyList){
-                var enemy = enemyList[key];
+        for(let key in projectileList){
+            let projectile = projectileList[key];
+            let collision = false;
+            for(let key in enemyList){
+                let enemy = enemyList[key];
                 collision = testCollision(projectile.component, enemy.component);
                 if(collision) {
                     delete enemyList[enemy.id];
@@ -267,7 +275,7 @@ function updateGameArea() {
         
         ctx.font = "30px Verdana";
         ctx.fillStyle = "red";
-        ctx.fillText("HP: " + hp, 30, 40);
+        ctx.fillText("HP: " + Math.max(hp, 0), 30, 40); // Don't show funky negative values for health
         ctx.fillText("Score: " + score, 175, 40);
     }
     if(hp >= 1) {
@@ -294,8 +302,8 @@ function moveRight() {
 }
 
 function togglePause() {
-    var menu = document.getElementById("mainMenu");
-    var continueGame = document.getElementById("continueGame");
+    let menu = document.getElementById("mainMenu");
+    let continueGame = document.getElementById("continueGame");
     if(!isPaused) {
         isPaused = true; 
         menu.style.display = "block";
@@ -309,11 +317,11 @@ function togglePause() {
 
 function showEndScreen() {
     // Show main menu with correct buttons:
-    var menu = document.getElementById("mainMenu");
+    let menu = document.getElementById("mainMenu");
     menu.style.display = "block";
-    var continueGame = document.getElementById("continueGame");
+    let continueGame = document.getElementById("continueGame");
     continueGame.style.display = "none";
-    var gameOver = document.getElementById("gameOver");
+    let gameOver = document.getElementById("gameOver");
     gameOver.style.display = "block";
     
     // Stop accepting commands from player:
@@ -352,9 +360,9 @@ function keyboardControlsManager(e) {
 function mouseControlsManager(e) {
     if(!isPaused) {
         // Get the mouse pointer position and shoot a new projectile toward it
-        var rect = e.target.getBoundingClientRect();
-        var x = e.clientX - rect.left;
-        var y = e.clientY - rect.top;
+        let rect = e.target.getBoundingClientRect();
+        let x = e.clientX - rect.left;
+        let y = e.clientY - rect.top;
         generateProjectileFromCharacter(x, y);
     }
 }
