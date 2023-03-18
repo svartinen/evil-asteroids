@@ -24,7 +24,7 @@ const enemyAsset = assetsDir + "rock.png"
 const imageAsset = "image"
 
 function startGame() {
-    // Set up player character and game area:
+    // Set up the player character and the game area:
     character = new component(170, 170, 30, 30, playerAsset, offsetX=0, offsetY=0, speed=5, type=imageAsset);  
     gameArea.start();
     
@@ -65,19 +65,26 @@ function startGame() {
 // A black canvas which works as the game area
 var gameArea = {
     canvas: document.getElementById('gameWindow'),
+    container: document.getElementById('gameContainer'),
     start: function() { 
         // Scale the game area to the current viewport and display it:
         this.canvas.width = window.innerWidth * 0.9;
         this.canvas.height = window.innerHeight * 0.9;
-        this.canvas.style.display = "inline";
         this.context = this.canvas.getContext("2d");
+        this.container.style.display = "inline";
+        
+        // Only draw the background once in the beginning:
+        let background = document.getElementById('gameBackground');
+        background.width = this.canvas.width;
+        background.height = this.canvas.height;
+        let backgroundContext = background.getContext("2d");
+        backgroundContext.beginPath();
+        backgroundContext.rect(0, 0, this.canvas.width, this.canvas.height);
+        backgroundContext.fillStyle = "black";
+        backgroundContext.fill();
     },
     clear: function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.context.beginPath();
-        this.context.rect(0, 0, this.canvas.width, this.canvas.height);
-        this.context.fillStyle = "black";
-        this.context.fill();
     }
 }
 
