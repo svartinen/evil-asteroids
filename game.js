@@ -9,8 +9,7 @@ var isPaused;
 var enemyInterval;
 
 var lastRenderTime = 0;
-const globalSpeedMult = 30;
-const frameRate = 60;
+const globalSpeedMult = 60;
 
 const assetsDir = "assets/"
 const playerAsset = assetsDir + "saucer.png"
@@ -241,7 +240,7 @@ function generateEnemy(speed=1, color, type) {
 
 function updateGameArea(currentTime) {
     if(!isPaused) {
-        const secondsSinceLastRender = (currentTime - lastRenderTime) / 1000
+        const secondsSinceLastRender = (currentTime - lastRenderTime) / 1000;
         const movementMult = globalSpeedMult  * secondsSinceLastRender;
         gameArea.clear();
         character.newPos(movementMult);    
@@ -258,7 +257,7 @@ function updateGameArea(currentTime) {
             enemy.newPos(movementMult);
             enemy.update();
             if(testCollision(character, enemy.component)) {
-                hp--;
+                hp -= movementMult;
             }
         } 
         
@@ -281,7 +280,7 @@ function updateGameArea(currentTime) {
         
         ctx.font = "30px Verdana";
         ctx.fillStyle = "red";
-        ctx.fillText("HP: " + Math.max(hp, 0), 30, 40); // Don't show funky negative values for health
+        ctx.fillText("HP: " + Math.max(Math.floor(hp), 0), 30, 40); // Don't show funky negative values for health
         ctx.fillText("Score: " + score, 175, 40);
     }
     lastRenderTime = currentTime;
