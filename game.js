@@ -7,6 +7,7 @@ var enemyList;
 var enemyListIndex;
 var isPaused;
 var enemyInterval;
+var playerMovements = {"ArrowUp": false, "ArrowDown": false, "ArrowLeft": false, "ArrowRight": false, "KeyW": false, "KeyS": false, "KeyA": false, "KeyD": false};
 
 var lastRenderTime = 0;
 const globalSpeedMult = 60;
@@ -18,7 +19,7 @@ const imageAsset = "image"
 
 function startGame() {
     // Set up player character and game area:
-    character = new component(170, 170, 30, 30, playerAsset, offsetX=0, offsetY=0, speed=10, type=imageAsset);  
+    character = new component(170, 170, 30, 30, playerAsset, offsetX=0, offsetY=0, speed=5, type=imageAsset);  
     gameArea.start();
     
     // Set the global variables (i.e. game flags):
@@ -32,6 +33,7 @@ function startGame() {
     
     // Set up the event listeners for controls:
     document.addEventListener('keydown', keyboardControlsManager);
+    document.addEventListener('keyup', keyboardControlsManager);
     document.addEventListener('click', mouseControlsManager);
     
     // Set up the pause menu and hide it for now:
@@ -74,7 +76,7 @@ var gameArea = {
 }
 
 // Manages the entities on the game area, 'color' is either a named color or an image path as dictated by param 'type'
-function component(x, y, width, height, color, offsetX=0, offsetY=0, speed=1, type, angle=0) {
+function component(x, y, width, height, color, offsetX=.0, offsetY=.0, speed=1, type, angle=0) {
     this.type = type;
     this.color = color;
     if (this.type == imageAsset) {
@@ -118,8 +120,8 @@ function component(x, y, width, height, color, offsetX=0, offsetY=0, speed=1, ty
     
     // Move to offset directions if the area bounds are not hit:
     this.newPos = function(elapsedTime) {
-        let newX = this.x + (this.offsetX * speed * elapsedTime);
-        let newY = this.y + (this.offsetY * speed * elapsedTime);
+        let newX = this.x + (this.offsetX * this.speed * elapsedTime);
+        let newY = this.y + (this.offsetY * this.speed * elapsedTime);
         if(newX < gameArea.canvas.width - this.width && newX >= 0) {
             this.x = newX;
         }
@@ -242,11 +244,35 @@ function generateEnemy(speed=1, color, type) {
     new enemy(x, y, width, height, 0, 0, randomizedSpeed, color, type, angle);   
 }
 
+function calculatePlayerMovementOffsets() {
+    let movement = 
+    playerMovements.KeyW && (playerMovements.KeyA || playerMovements.KeyD) ||
+    playerMovements.KeyS && (playerMovements.KeyA || playerMovements.KeyD) ||
+    playerMovements.ArrowUp && (playerMovements.ArrowLeft || playerMovements.ArrowRight) ||
+    playerMovements.KeyDown && (playerMovements.ArrowLeft|| playerMovements.ArrowRight) ? 0.707 : 1; // 1/sqrt(2) = ~0.707, for diagonal movement
+    
+    if(playerMovements.KeyA || playerMovements.ArrowLeft){
+        character.offsetX -= movement;
+    } 
+    if(playerMovements.KeyW || playerMovements.ArrowUp){
+        character.offsetY -= movement;
+    } 
+    if(playerMovements.KeyD || playerMovements.ArrowRight){
+        character.offsetX += movement;
+    } 
+    if(playerMovements.KeyS || playerMovements.ArrowDown){
+        character.offsetY += movement;
+    } 
+}
+
 function updateGameArea(currentTime) {
     if(!isPaused) {
         const secondsSinceLastRender = (currentTime - lastRenderTime) / 1000;
         const movementMult = globalSpeedMult  * secondsSinceLastRender;
+        
         gameArea.clear();
+        
+        calculatePlayerMovementOffsets();
         character.newPos(movementMult);    
         character.update();
     
@@ -295,22 +321,6 @@ function updateGameArea(currentTime) {
     }
 }
 
-function moveUp() {
-    character.offsetY--; 
-}
-
-function moveDown() {
-    character.offsetY++; 
-}
-
-function moveLeft() {
-    character.offsetX--; 
-}
-
-function moveRight() {
-    character.offsetX++; 
-}
-
 function togglePause() {
     let menu = document.getElementById("mainMenu");
     let continueGame = document.getElementById("continueGame");
@@ -346,30 +356,14 @@ function showEndScreen() {
 }
 
 function keyboardControlsManager(e) {
+    e.preventDefault();
     if(!isPaused) {
-        switch (e.keyCode) {
-            case 37: // Arrow Left
-            case 65: // A
-                moveLeft();
-                break;     
-            case 38: // Arrow Up
-            case 87: // W
-                moveUp();
-                break;
-            case 39:  // Arrow Right
-            case 68:  // D
-                moveRight();
-                break;
-            case 40:  // Arrow Down
-            case 83:  // S
-                moveDown();
-                break;
+        if (e.code in playerMovements) { // The pressed key is WASD or one of the arrow keys
+            playerMovements[e.code] = e.type === "keydown"
         }
     }
-    switch (e.keyCode) {
-        case 27: // Esc
-        case 80: // P
-            togglePause();
+    if(e.keyCode == 27 || e.keyCode == 80) { // The pressed key is P or ESC
+        if (e.type === "keydown") togglePause();
     }
 }
 
