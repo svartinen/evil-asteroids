@@ -44,6 +44,8 @@ function startGame() {
     let menu = document.getElementById("mainMenu");
     menu.style.display = "none";
     menu.style.background = "rgba(0,0,0,0.5)";
+    let finalScore = document.getElementById('finalScore');
+    finalScore.style.display = "none";
     
     // Spawn new enemies at a steady rate of time:
     enemyInterval = setInterval(function () {generateEnemy(1, enemyAsset, imageAsset)}, 500);
