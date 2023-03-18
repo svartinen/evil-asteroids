@@ -7,10 +7,16 @@ var enemyList;
 var enemyListIndex;
 var isPaused;
 var enemyInterval;
-var playerMovements = {"ArrowUp": false, "ArrowDown": false, "ArrowLeft": false, "ArrowRight": false, "KeyW": false, "KeyS": false, "KeyA": false, "KeyD": false};
+
+const playerMovements = 
+{"ArrowUp": false, "ArrowDown": false, "ArrowLeft": false, "ArrowRight": false, 
+"KeyW": false, "KeyS": false, "KeyA": false, "KeyD": false};
 
 var lastRenderTime = 0;
 const globalSpeedMult = 60;
+
+const enemySpeed = 1;
+const enemySpawnrate = 500;
 
 const assetsDir = "assets/"
 const playerAsset = assetsDir + "saucer.png"
@@ -45,12 +51,12 @@ function startGame() {
     gameOver.style.display = "none";
     let menu = document.getElementById("mainMenu");
     menu.style.display = "none";
-    menu.style.background = "rgba(0,0,0,0.5)";
+    menu.style.background = "rgba(0,0,0,0.5)"; // Adds a nice shadow effect over the game area
     let finalScore = document.getElementById('finalScore');
     finalScore.style.display = "none";
     
     // Spawn new enemies at a steady rate of time:
-    enemyInterval = setInterval(function () {generateEnemy(1, enemyAsset, imageAsset)}, 500);
+    enemyInterval = setInterval(function () {generateEnemy(enemySpeed, enemyAsset, imageAsset)}, enemySpawnrate);
     
     // Start game loop:
     requestAnimationFrame(updateGameArea);
@@ -315,7 +321,6 @@ function updateGameArea(currentTime) {
 
 function togglePause() {
     let menu = document.getElementById("mainMenu");
-    let continueGame = document.getElementById("continueGame");
     if(!isPaused) {
         isPaused = true; 
         menu.style.display = "block";
@@ -323,7 +328,7 @@ function togglePause() {
     } else {
         isPaused = false;
         menu.style.display = "none";
-        enemyInterval = setInterval(function () {generateEnemy(1, enemyAsset, imageAsset)}, 500);
+        enemyInterval = setInterval(function () {generateEnemy(enemySpeed, enemyAsset, imageAsset)}, enemySpawnrate);
     }
 }
 
@@ -341,6 +346,7 @@ function showEndScreen() {
     
     // Stop accepting commands from player:
     document.removeEventListener('keydown', keyboardControlsManager);
+    document.removeEventListener('keyup', keyboardControlsManager);
     document.removeEventListener('click', mouseControlsManager);
     
     // Stop spawning enemies:
@@ -351,7 +357,7 @@ function keyboardControlsManager(e) {
     e.preventDefault();
     if(!isPaused) {
         if (e.code in playerMovements) { // The pressed key is WASD or one of the arrow keys
-            playerMovements[e.code] = e.type === "keydown"
+            playerMovements[e.code] = e.type === "keydown" // Toggle movement key values based on the player's keypresses
         }
     }
     if(e.keyCode == 27 || e.keyCode == 80) { // The pressed key is P or ESC
