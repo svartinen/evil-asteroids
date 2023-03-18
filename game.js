@@ -23,10 +23,18 @@ const playerAsset = assetsDir + "saucer.png"
 const enemyAsset = assetsDir + "rock.png"
 const imageAsset = "image"
 
+const playerImage = new Image();
+const enemyRockImage = new Image();
+
+const assets = {[playerAsset]: playerImage, [enemyAsset]: enemyRockImage}
+
 function startGame() {
     // Set up the player character and the game area:
     character = new component(170, 170, 30, 30, playerAsset, offsetX=0, offsetY=0, speed=5, type=imageAsset);  
     gameArea.start();
+    
+    playerImage.src = playerAsset;
+    enemyRockImage.src = enemyAsset;
     
     // Set the global variables (i.e. game flags):
     hp = 100;
@@ -77,7 +85,7 @@ var gameArea = {
         let background = document.getElementById('gameBackground');
         background.width = this.canvas.width;
         background.height = this.canvas.height;
-        let backgroundContext = background.getContext("2d");
+        let backgroundContext = background.getContext("2d", {alpha: false});
         backgroundContext.beginPath();
         backgroundContext.rect(0, 0, this.canvas.width, this.canvas.height);
         backgroundContext.fillStyle = "black";
@@ -92,10 +100,6 @@ var gameArea = {
 function component(x, y, width, height, color, offsetX=.0, offsetY=.0, speed=1, type, angle=0) {
     this.type = type;
     this.color = color;
-    if (this.type == imageAsset) {
-        this.image = new Image();
-        this.image.src = color;
-    }
     this.width = width;
     this.height = height;
     this.offsetX = offsetX;
@@ -118,7 +122,7 @@ function component(x, y, width, height, color, offsetX=.0, offsetY=.0, speed=1, 
         }
         
         if (this.type == imageAsset) {
-            ctx.drawImage(this.image,
+            ctx.drawImage(assets[this.color],
             this.x,
             this.y,
             this.width, this.height)
