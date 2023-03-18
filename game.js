@@ -146,25 +146,21 @@ function testCollision(c1, c2) {
 
 // Object manager for the projectiles shot by the player
 function projectile(x, y, width, height, offsetX=0, offsetY=0, speed=10, color='red', angle=0) {
-    this.component = new component(x, y, width, height, color, offsetX, offsetY, speed, color, angle);
-    this.id = projectileListIndex;
-    projectileListIndex++;
+    component.call(this, x, y, width, height, color, offsetX, offsetY, speed, color, angle);
     
+    this.id = projectileListIndex;
+    projectileListIndex++; 
     projectileList[this.id] = this;
     
-    
-    this.update = function() {
-        this.component.update();
-    }
     // Move projectile to offset direction. If this pojectile goes outside area bounds, delete it.
     this.newPos = function(elapsedTime) {
-        this.component.x += this.component.offsetX * speed * elapsedTime;
-        this.component.y += this.component.offsetY * speed * elapsedTime;
+        this.x += this.offsetX * speed * elapsedTime;
+        this.y += this.offsetY * speed * elapsedTime;
                    
-        if(this.component.x < 0 || this.component.x > gameArea.canvas.width){
+        if(this.x < 0 || this.x > gameArea.canvas.width){
             delete projectileList[this.id];
         }
-        if(this.component.y < 0 || this.component.y > gameArea.canvas.height){
+        if(this.y < 0 || this.y > gameArea.canvas.height){
             delete projectileList[this.id];
         }
     }
@@ -193,22 +189,18 @@ function generateProjectileFromCharacter(targetX, targetY){
 
 // Object manager for the enemy asteroids
 function enemy(x, y, width, height, offsetX=0, offsetY=0, speed=1, color='green', type, angle) {
-    this.component = new component(x, y, width, height, color, offsetX, offsetY, speed, type, angle);
+    component.call(this, x, y, width, height, color, offsetX, offsetY, speed, type, angle);
+    
     this.id = enemyListIndex;
-    enemyListIndex++;
-    
+    enemyListIndex++;   
     enemyList[this.id] = this;
-    
-    this.update = function() {
-        this.component.update();
-    }
     
     // Move toward the player character
     this.newPos = function(elapsedTime) {
-        let dir = calculateDirection(this.component.x, this.component.y, character.x, character.y);
+        let dir = calculateDirection(this.x, this.y, character.x, character.y);
         
-        this.component.x += dir[0] * speed * elapsedTime;
-        this.component.y += dir[1] * speed * elapsedTime;
+        this.x += dir[0] * speed * elapsedTime;
+        this.y += dir[1] * speed * elapsedTime;
     }
 }
 
@@ -286,7 +278,7 @@ function updateGameArea(currentTime) {
             let enemy = enemyList[key];
             enemy.newPos(movementMult);
             enemy.update();
-            if(testCollision(character, enemy.component)) {
+            if(testCollision(character, enemy)) {
                 hp -= movementMult;
             }
         } 
@@ -296,7 +288,7 @@ function updateGameArea(currentTime) {
             let collision = false;
             for(let key in enemyList){
                 let enemy = enemyList[key];
-                collision = testCollision(projectile.component, enemy.component);
+                collision = testCollision(projectile, enemy);
                 if(collision) {
                     delete enemyList[enemy.id];
                     score += 100;
