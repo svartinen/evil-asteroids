@@ -8,6 +8,10 @@ var enemyListIndex;
 var isPaused;
 var enemyInterval;
 
+var lastRenderTime = 0;
+const globalSpeedMult = 30;
+const frameRate = 60;
+
 const assetsDir = "assets/"
 const playerAsset = assetsDir + "saucer.png"
 const enemyAsset = assetsDir + "rock.png"
@@ -110,9 +114,9 @@ function component(x, y, width, height, color, offsetX=0, offsetY=0, speed=1, ty
     }
     
     // Move to offset directions if the area bounds are not hit:
-    this.newPos = function() {
-        let newX = this.x + (this.offsetX * speed);
-        let newY = this.y + (this.offsetY * speed);
+    this.newPos = function(elapsedTime) {
+        let newX = this.x + (this.offsetX * speed * elapsedTime);
+        let newY = this.y + (this.offsetY * speed * elapsedTime);
         if(newX < gameArea.canvas.width - this.width && newX >= 0) {
             this.x = newX;
         }
@@ -148,9 +152,9 @@ function projectile(x, y, width, height, offsetX=0, offsetY=0, speed=10, color='
         this.component.update();
     }
     // Move projectile to offset direction. If this pojectile goes outside area bounds, delete it.
-    this.newPos = function() {
-        this.component.x += this.component.offsetX * speed;
-        this.component.y += this.component.offsetY * speed;
+    this.newPos = function(elapsedTime) {
+        this.component.x += this.component.offsetX * speed * elapsedTime;
+        this.component.y += this.component.offsetY * speed * elapsedTime;
                    
         if(this.component.x < 0 || this.component.x > gameArea.canvas.width){
             delete projectileList[this.id];
@@ -195,11 +199,11 @@ function enemy(x, y, width, height, offsetX=0, offsetY=0, speed=1, color='green'
     }
     
     // Move toward the player character
-    this.newPos = function() {
+    this.newPos = function(elapsedTime) {
         let dir = calculateDirection(this.component.x, this.component.y, character.x, character.y);
         
-        this.component.x += dir[0] * speed;
-        this.component.y += dir[1] * speed;
+        this.component.x += dir[0] * speed * elapsedTime;
+        this.component.y += dir[1] * speed * elapsedTime;
     }
 }
 
@@ -235,21 +239,23 @@ function generateEnemy(speed=1, color, type) {
     new enemy(x, y, width, height, 0, 0, randomizedSpeed, color, type, angle);   
 }
 
-function updateGameArea() {
+function updateGameArea(currentTime) {
     if(!isPaused) {
+        const secondsSinceLastRender = (currentTime - lastRenderTime) / 1000
+        const movementMult = globalSpeedMult  * secondsSinceLastRender;
         gameArea.clear();
-        character.newPos();    
+        character.newPos(movementMult);    
         character.update();
     
         for(let key in projectileList){
             let projectile = projectileList[key];
-            projectile.newPos();
+            projectile.newPos(movementMult);
             projectile.update();
         }
     
         for(let key in enemyList){
             let enemy = enemyList[key];
-            enemy.newPos();
+            enemy.newPos(movementMult);
             enemy.update();
             if(testCollision(character, enemy.component)) {
                 hp--;
@@ -278,6 +284,7 @@ function updateGameArea() {
         ctx.fillText("HP: " + Math.max(hp, 0), 30, 40); // Don't show funky negative values for health
         ctx.fillText("Score: " + score, 175, 40);
     }
+    lastRenderTime = currentTime;
     if(hp >= 1) {
         requestAnimationFrame(updateGameArea);
     } else {
