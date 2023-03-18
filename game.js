@@ -137,7 +137,7 @@ function component(x, y, width, height, color, offsetX=.0, offsetY=.0, speed=1, 
     
     // Move to offset directions if the area bounds are not hit:
     this.newPos = function(elapsedTime) {
-        this.angle += 5 * elapsedTime; // Spins the player alien saucer around
+        this.angle += 0.1 * elapsedTime; // Spins the player alien saucer around
         let newX = this.x + (this.offsetX * this.speed * elapsedTime);
         let newY = this.y + (this.offsetY * this.speed * elapsedTime);
         if(newX < gameArea.canvas.width - this.width && newX >= 0) {
