@@ -35,6 +35,8 @@ function startGame() {
     document.addEventListener('click', mouseControlsManager);
     
     // Set up the pause menu and hide it for now:
+    let title = document.getElementById("title");
+    title.style.textShadow = "2px 2px gray";
     let continueGame = document.getElementById("continueGame");
     continueGame.style.display = "block";
     let gameOver = document.getElementById("gameOver");
@@ -322,13 +324,16 @@ function togglePause() {
 }
 
 function showEndScreen() {
-    // Show main menu with correct buttons:
+    // Show the main menu with the correct elements, including the player's final score:
     let menu = document.getElementById("mainMenu");
     menu.style.display = "block";
     let continueGame = document.getElementById("continueGame");
     continueGame.style.display = "none";
     let gameOver = document.getElementById("gameOver");
     gameOver.style.display = "block";
+    let finalScore = document.getElementById('finalScore');
+    finalScore.innerHTML = "Final Score: " + score;
+    finalScore.style.display = "block";
     
     // Stop accepting commands from player:
     document.removeEventListener('keydown', keyboardControlsManager);

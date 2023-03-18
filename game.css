@@ -57,7 +57,7 @@ body {
 	width: 11em;
 }
 
-#continueGame, #gameOver {
+#continueGame, #gameOver, #finalScore {
 	display: none;
 }
 
@@ -65,6 +65,12 @@ body {
 	font-family: "Impact";
 	font-weight: bold;
 	font-size: 5em;
+	color: red;
+	text-shadow: 2px 2px white;
+}
+
+#finalScore {
+	font-size: 2em;
 	color: red;
 	text-shadow: 2px 2px white;
 }
