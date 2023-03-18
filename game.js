@@ -113,7 +113,7 @@ function component(x, y, width, height, color, offsetX=.0, offsetY=.0, speed=1, 
         ctx = gameArea.context;
         ctx.save();
         // Rotate the component according to its angle (for instance, projectiles should point toward the direction they are moving)
-        if (angle != 0) {
+        if (this.angle != 0) {
             let rotX = this.x + 0.5 * this.width;
             let rotY = this.y + 0.5 * this.height;
             ctx.translate(rotX, rotY);
@@ -137,6 +137,7 @@ function component(x, y, width, height, color, offsetX=.0, offsetY=.0, speed=1, 
     
     // Move to offset directions if the area bounds are not hit:
     this.newPos = function(elapsedTime) {
+        this.angle += 5 * elapsedTime; // Spins the player alien saucer around
         let newX = this.x + (this.offsetX * this.speed * elapsedTime);
         let newY = this.y + (this.offsetY * this.speed * elapsedTime);
         if(newX < gameArea.canvas.width - this.width && newX >= 0) {
@@ -196,7 +197,7 @@ function calculateDirection(x, y, targetX, targetY) {
 // Generates a new pojectile that starts at the player player position and advances toward the point (targetX, targetY) 
 function generateProjectileFromCharacter(targetX, targetY){
     let height = 5;
-    let width = 25;
+    let width = 30;
     
     let dir = calculateDirection(character.x, character.y, targetX, targetY);
     let radAngle = Math.atan2(dir[1], dir[0]);
@@ -212,8 +213,23 @@ function enemy(x, y, width, height, offsetX=0, offsetY=0, speed=1, color='green'
     enemyListIndex++;   
     enemyList[this.id] = this;
     
+    let swayAngle = 0.9 + Math.random() * 0.01;
+    this.swayStart = this.angle - swayAngle;
+    this.swayEnd = this.angle + swayAngle;
+    this.swayDir = "start";
+    
     // Move toward the player character
     this.newPos = function(elapsedTime) {
+        // Make enemy rocks sway
+        let magnitude = Math.random() * 0.05;
+        if (this.swayDir == "start") {
+            this.angle -= elapsedTime * magnitude;
+            if (this.angle <= this.swayStart) this.swayDir = "end"
+        } else {
+            this.angle += elapsedTime * magnitude;
+            if (this.angle >= this.swayEnd) this.swayDir = "start"
+        }
+        
         let dir = calculateDirection(this.x, this.y, character.x, character.y);
         
         this.x += dir[0] * speed * elapsedTime;
