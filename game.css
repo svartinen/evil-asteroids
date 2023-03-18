@@ -1,0 +1,95 @@
+body {
+	background: #303342;
+}
+
+#gameContainer {
+	width: 100%;
+	text-align: center;
+	position: relative;
+}
+
+#gameWindow {
+	border: solid .5px red;
+	display: none;
+}
+
+#title {
+	font-family: "Copperplate";
+	font-size: 3em;
+	margin: auto;
+	color: red;
+	text-shadow: 2px 2px black;
+}
+
+#mainMenu {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	font-family: "Verdana";
+	font-size: 2em;
+	text-align: center;
+}
+
+#menuFlex {
+	display: flex;
+	align-items: center;
+	flex-flow: column; 
+}
+
+#newGame, #continueGame {
+	vertical-align: middle;
+	border: 5px solid black;
+	border-radius: 7px;
+	background-color: white;
+	color: red;
+	width: 10em;
+	margin: 10px auto;
+	padding: 10px;
+	text-shadow: 1px 1px maroon;
+}
+
+#newGame:hover, #continueGame:hover {
+	background-color: red;
+	color: white;
+	font-weight: bold;
+	width: 11em;
+}
+
+#continueGame, #gameOver {
+	display: none;
+}
+
+#gameOver {
+	font-family: "Impact";
+	font-weight: bold;
+	font-size: 5em;
+	color: red;
+	text-shadow: 2px 2px white;
+}
+
+#controlsTooltip {
+	border: 5px solid black;
+	border-radius: 7px;
+	line-height: 1.5;
+	background: #827d7d;
+	padding: 15px;
+	font-style: oblique;
+	color: white;
+	text-shadow: 2px 2px black;
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+}
+
+mark {
+	background-color: white;
+	border-radius: 7px;
+	border: 1px solid black;
+	padding: 2px;
+	color: red;
+	font-style: normal;
+	text-shadow: 1px 1px maroon;
+}
