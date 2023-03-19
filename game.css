@@ -14,7 +14,6 @@ canvas {
 	top: 0; 
 	bottom: 0; 	
 }
-
 #gameContainer {
 	width: 100%;
 	text-align: center;
@@ -28,6 +27,24 @@ canvas {
 
 #gameWindow {
 	z-index: 2;
+}
+
+#gameInfo {
+	z-index: 3;
+	font-family: monospace;
+	font-size: 2em;
+	text-shadow: 2px 2px black;
+	color: red;
+	position: absolute;
+	margin-left: auto;
+	margin-right: auto;
+	left: 0; 
+	right: 0; 
+	width: 30%;
+	display: block;
+	background: rgba(130, 125, 125, 0.5);
+	border: 5px solid black;
+	border-radius: 7px;
 }
 
 #title {
@@ -47,7 +64,7 @@ canvas {
 	font-family: "Verdana";
 	font-size: 2em;
 	text-align: center;
-	z-index: 3;
+	z-index: 4;
 }
 
 #menuFlex {

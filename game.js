@@ -507,10 +507,7 @@ function updateGameArea(currentTime) {
             }
         }
         
-        ctx.font = "30px Verdana";
-        ctx.fillStyle = "red";
-        ctx.fillText("HP: " + Math.max(Math.floor(hp), 0), 30, 40); // Don't show funky negative values for health
-        ctx.fillText("Score: " + score, 175, 40);
+        updateGameInfo();
     }
     lastRenderTime = currentTime;
     if(hp >= 1) {
@@ -518,6 +515,12 @@ function updateGameArea(currentTime) {
     } else {
         showEndScreen();
     }
+}
+
+function updateGameInfo() {
+    let gameInfo = document.getElementById("gameInfo");
+    let currentHP = Math.max(Math.floor(hp), 0).toString().padEnd(3, "\u00A0"); // show an integer that has been padded to a consistent length of 3 chars
+    gameInfo.innerHTML = "HP: " + currentHP + "<br>Score: " + score.toString().padEnd(6, "\u00A0");
 }
 
 function togglePause() {
