@@ -46,10 +46,7 @@ function startGame() {
     particleListIndex = 0;
     isPaused = false;
     
-    playerMovements = {
-        "ArrowUp": false, "ArrowDown": false, "ArrowLeft": false, "ArrowRight": false, 
-        "KeyW": false, "KeyS": false, "KeyA": false, "KeyD": false
-    };
+    resetMovementKeys();
     
     // Set up the event listeners for controls:
     document.addEventListener('keydown', keyboardControlsManager);
@@ -405,6 +402,13 @@ function calculatePlayerMovementOffsets() {
     } 
 }
 
+function resetMovementKeys() {
+    playerMovements = {
+        "ArrowUp": false, "ArrowDown": false, "ArrowLeft": false, "ArrowRight": false, 
+        "KeyW": false, "KeyS": false, "KeyA": false, "KeyD": false
+    };
+}
+
 function updateGameArea(currentTime) {
     if(!isPaused) {
         const secondsSinceLastRender = (currentTime - lastRenderTime) * 0.001; // milliseconds to seconds; 1/1000 = 0.001, multiplication is faster than division 
@@ -479,6 +483,7 @@ function togglePause() {
         isPaused = false;
         menu.style.display = "none";
         enemyInterval = setInterval(function () {generateEnemy(enemySpeed, enemyAsset, imageAsset)}, enemySpawnrate);
+        resetMovementKeys();
     }
 }
 
