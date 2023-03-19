@@ -100,7 +100,7 @@ var gameArea = {
 }
 
 // Manages the entities on the game area, 'color' is either a named color or an image path as dictated by param 'type'
-function component(x, y, width, height, color, offsetX=.0, offsetY=.0, speed=1, type, angle=0) {
+function component(x, y, width, height, color, offsetX=.0, offsetY=.0, speed=1, type, angle=0, brightness=100) {
     this.type = type;
     this.color = color;
     this.width = width;
@@ -111,6 +111,7 @@ function component(x, y, width, height, color, offsetX=.0, offsetY=.0, speed=1, 
     this.y = y;
     this.speed = speed;
     this.angle = angle;
+    this.brightness = brightness;
     
     this.draw = function() {
         ctx = gameArea.context;
@@ -125,6 +126,7 @@ function component(x, y, width, height, color, offsetX=.0, offsetY=.0, speed=1, 
         }
         
         if (this.type == imageAsset) {
+            if (this.brightness != 100) ctx.filter = "brightness("+ this.brightness + "%)";
             ctx.drawImage(assets[this.color],
             this.x,
             this.y,
@@ -259,8 +261,8 @@ function generateProjectileFromCharacter(targetX, targetY){
 }
 
 // Object manager for the enemy asteroids
-function enemy(x, y, width, height, offsetX=0, offsetY=0, speed=1, color='green', type, angle) {
-    component.call(this, x, y, width, height, color, offsetX, offsetY, speed, type, angle);
+function enemy(x, y, width, height, offsetX=0, offsetY=0, speed=1, color='green', type, angle, brightness=100) {
+    component.call(this, x, y, width, height, color, offsetX, offsetY, speed, type, angle, brightness);
     
     this.id = enemyListIndex;
     enemyListIndex++;   
@@ -328,8 +330,9 @@ function generateEnemy(speed=1, color, type) {
     
     let randomizedSpeed = Math.random() * 2 + speed;
     let angle = Math.random() * Math.PI * 2;
+    let brightness = Math.random() * 70 + 30;
     
-    new enemy(x, y, width, height, 0, 0, randomizedSpeed, color, type, angle);   
+    new enemy(x, y, width, height, 0, 0, randomizedSpeed, color, type, angle, brightness);   
 }
 
 function particle(x, y, offsetX=0, offsetY=0, speed=1, color='yellow', radius=1.0, alpha=1.0) {
