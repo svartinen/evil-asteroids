@@ -304,8 +304,8 @@ function enemy(x, y, width, height, offsetX=0, offsetY=0, speed=1, color='green'
 
 // Generates a slightly randomized enemy asteroid: 
 function generateEnemy(speed=1, color, type) {
-    let height = 20 + Math.random() * 50;
-    let width = 20 + Math.random() * 50;
+    let height = 20 + Math.random() * 80;
+    let width = 20 + Math.random() * 80;
     
     // The enemy appears at a random edge of the game area:
     let x, y;
@@ -330,7 +330,7 @@ function generateEnemy(speed=1, color, type) {
     
     let randomizedSpeed = Math.random() * 2 + speed;
     let angle = Math.random() * Math.PI * 2;
-    let brightness = Math.random() * 70 + 30;
+    let brightness = Math.random() * 150 + 50;
     
     new enemy(x, y, width, height, 0, 0, randomizedSpeed, color, type, angle, brightness);   
 }
