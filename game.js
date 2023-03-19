@@ -182,11 +182,31 @@ function projectile(x, y, width, height, offsetX=0, offsetY=0, speed=10, color='
     projectileListIndex++; 
     projectileList[this.id] = this;
     
+    [this.wobbleDirX, this.wobbleDirY] = calculateDirection(this.offsetX, this.offsetY, -this.offsetY, this.offsetX);
+    let wobbleAmount = Math.random() * 100;
+    this.originalX = this.x;
+    this.originalY = this.y;
+    this.wobbleDir = "start";
+    
+    switch(Math.round(Math.random())) {
+        case 0:
+            this.wobbleDir = "start";
+            break;
+        case 1:
+            this.wobbleDir = "end";
+            break;
+    }
+    
     // Move the projectile to offset direction. If this pojectile goes outside area bounds, delete it.
     this.newPos = function(elapsedTime) {
-        this.x += this.offsetX * speed * elapsedTime;
-        this.y += this.offsetY * speed * elapsedTime;
-                   
+        let currentOffsetX = this.offsetX * this.speed * elapsedTime;
+        let currentOffsetY = this.offsetY * this.speed * elapsedTime;
+        
+        this.x += currentOffsetX;
+        this.y += currentOffsetY;
+        this.originalX += currentOffsetX;
+        this.originalY += currentOffsetY;
+        
         if(this.x < 0 || this.x > gameArea.canvas.width){
             delete projectileList[this.id];
         }
@@ -196,14 +216,30 @@ function projectile(x, y, width, height, offsetX=0, offsetY=0, speed=10, color='
     }
     
     this.animate = function(elapsedTime) {
-        this.offsetX += Math.random() * 0.01 * elapsedTime;
-        this.offsetY += Math.random() * 0.01 * elapsedTime;
+        let magnitude = Math.random() * 2;
+        if (this.wobbleDir == "start") {
+            this.x -= this.wobbleDirX * magnitude * elapsedTime;
+            this.y -= this.wobbleDirY * magnitude * elapsedTime;
+            if (calculateDistance(this.x, this.y, this.originalX, this.originalY) >= wobbleAmount) this.wobbleDir = "end";
+        } else{
+            this.x += this.wobbleDirX * magnitude * elapsedTime;
+            this.y += this.wobbleDirY * magnitude * elapsedTime;
+            if (calculateDistance(this.x, this.y, this.originalX, this.originalY) >= wobbleAmount) this.wobbleDir = "start";
+        }
     }
+}
+
+function calculateDistance(x, y, targetX, targetY) {
+    // Calculate direction vector:
+    let offsetX = targetX - x;
+    let offsetY = targetY - y;
+    let length = Math.sqrt(offsetX * offsetX + offsetY * offsetY);
+    
+    return length;
 }
 
 // Returns a unit vector [dirX, dirY] that shows which way you should go from the point (x, y) to end up in the point (targetX, targetY)  
 function calculateDirection(x, y, targetX, targetY) {
-    // Calculate direction vector:
     let offsetX = targetX - x;
     let offsetY = targetY - y;
     let length = Math.sqrt(offsetX * offsetX + offsetY * offsetY);
@@ -233,14 +269,22 @@ function enemy(x, y, width, height, offsetX=0, offsetY=0, speed=1, color='green'
     let swayAngle = 0.9 + Math.random() * 0.01;
     this.swayStart = this.angle - swayAngle;
     this.swayEnd = this.angle + swayAngle;
-    this.swayDir = "start";
+    
+    switch(Math.round(Math.random())) {
+        case 0:
+            this.swayDir = "start";
+            break;
+        case 1:
+            this.swayDir = "end";
+            break;
+    }
     
     // Move toward the player character
     this.newPos = function(elapsedTime) {
         let dir = calculateDirection(this.x, this.y, character.x, character.y);
         
-        this.x += dir[0] * speed * elapsedTime;
-        this.y += dir[1] * speed * elapsedTime;
+        this.x += dir[0] * this.speed * elapsedTime;
+        this.y += dir[1] * this.speed * elapsedTime;
     }
     
      // Make enemy rocks sway
