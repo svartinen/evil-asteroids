@@ -5,6 +5,8 @@ var projectileList;
 var projectileListIndex;
 var enemyList;
 var enemyListIndex;
+var particleList;
+var particleListIndex;
 var isPaused;
 var enemyInterval;
 
@@ -43,6 +45,8 @@ function startGame() {
     projectileListIndex = 0;
     enemyList = {};
     enemyListIndex = 0;
+    particleList = {};
+    particleListIndex = 0;
     isPaused = false;
     
     // Set up the event listeners for controls:
@@ -193,8 +197,8 @@ function projectile(x, y, width, height, offsetX=0, offsetY=0, speed=10, color='
     }
     
     this.animate = function(elapsedTime) {
-        this.offsetX += Math.random() * 0.01;
-        this.offsetY += Math.random() * 0.01;
+        this.offsetX += Math.random() * 0.01 * elapsedTime;
+        this.offsetY += Math.random() * 0.01 * elapsedTime;
     }
 }
 
@@ -285,6 +289,99 @@ function generateEnemy(speed=1, color, type) {
     new enemy(x, y, width, height, 0, 0, randomizedSpeed, color, type, angle);   
 }
 
+function particle(x, y, offsetX=0, offsetY=0, speed=1, color='yellow', radius=1.0, alpha=1.0) {
+    component.call(this, x, y, 0, 0, color, offsetX, offsetY, speed, 'color', radius);
+    
+    this.id = particleListIndex;
+    particleListIndex++;   
+    particleList[this.id] = this;
+    
+    this.alpha = alpha;
+    
+    this.draw = function() { 
+        ctx = gameArea.context;
+        ctx.save();
+        
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.angle, 0, Math.PI * 2, false);
+        ctx.fill();
+        
+        ctx.restore();
+    }
+    
+    // Move the particle to offset direction. If this particle goes outside area bounds, delete it.
+    this.newPos = function(elapsedTime) {
+        this.x += this.offsetX * speed * elapsedTime;
+        this.y += this.offsetY * speed * elapsedTime;
+                   
+        if(this.x < 0 || this.x > gameArea.canvas.width){
+            delete particleList[this.id];
+        }
+        if(this.y < 0 || this.y > gameArea.canvas.height){
+            delete particleList[this.id];
+        }
+    }
+    
+    this.animate = function(elapsedTime) {
+        this.alpha -= 0.005 * elapsedTime;
+        this.alpha = Math.max(this.alpha, 0); // Prevent negative alpha values that cause an "afterflash"
+    }
+}
+
+// Generates some explosion particles 
+function generateExplosionParticles(x, y, amount) {   
+    for(i = 0; i < amount; i++) {
+        let offsetX = (Math.random() - 0.5) * (Math.random() * 6);
+        let offsetY = (Math.random() - 0.5) * (Math.random() * 6);
+        let radius = Math.random() * 5;
+        let randomizedSpeed = Math.random() * 3;
+        let color;
+        
+        // Select a random color for a particle:
+        switch(Math.round(Math.random() * 2)) {
+            case 0:
+                color = 'yellow';
+                break;
+            case 1:
+                color = 'brown';
+                break;
+            case 2:
+                color = 'gray';
+                break;
+        }
+        
+        new particle(x, y, offsetX, offsetY, randomizedSpeed, color, radius, 1);
+    }
+}
+
+// Generates some player-enemy collision particles 
+function generateCollisionParticles(x, y, amount) {   
+    for(i = 0; i < amount; i++) {
+        let offsetX = (Math.random() - 0.5) * (Math.random() * 6);
+        let offsetY = (Math.random() - 0.5) * (Math.random() * 6);
+        let radius = Math.random() * 2;
+        let randomizedSpeed = Math.random() * 0.75;
+        let color;
+        
+        // Select a random color for a particle:
+        switch(Math.round(Math.random() * 2)) {
+            case 0:
+                color = 'blue';
+                break;
+            case 1:
+                color = 'white';
+                break;
+            case 2:
+                color = 'black';
+                break;
+        }
+        
+        new particle(x, y, offsetX, offsetY, randomizedSpeed, color, radius, 1);
+    }
+}
+
 function calculatePlayerMovementOffsets() {
     let movement = 
     playerMovements.KeyW && (playerMovements.KeyA || playerMovements.KeyD) ||
@@ -326,6 +423,8 @@ function updateGameArea(currentTime) {
             enemy.update(movementMult);
             if(testCollision(character, enemy)) {
                 hp -= movementMult;
+                let dir = calculateDirection(character.x, character.y, enemy.x, enemy.y);
+                generateCollisionParticles(character.x + dir[0] + character.width * 0.5, character.y + dir[1] + character.height  * 0.5, 5);
             }
         } 
         
@@ -338,11 +437,20 @@ function updateGameArea(currentTime) {
                 if(collision) {
                     delete enemyList[enemy.id];
                     score += 100;
+                    generateExplosionParticles(enemy.x, enemy.y, 20);
                     break;
                 }
             }
             if(collision) {
                 delete projectileList[projectile.id];
+            }
+        }
+        
+        for(let key in particleList){
+            let particle = particleList[key];
+            particle.update(movementMult);
+            if(particle.alpha <= 0) {
+                delete particleList[particle.id];
             }
         }
         
