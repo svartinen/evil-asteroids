@@ -109,7 +109,7 @@ function component(x, y, width, height, color, offsetX=.0, offsetY=.0, speed=1, 
     this.speed = speed;
     this.angle = angle;
     
-    this.update = function() {
+    this.draw = function() {
         ctx = gameArea.context;
         ctx.save();
         // Rotate the component according to its angle (for instance, projectiles should point toward the direction they are moving)
@@ -137,7 +137,6 @@ function component(x, y, width, height, color, offsetX=.0, offsetY=.0, speed=1, 
     
     // Move to offset directions if the area bounds are not hit:
     this.newPos = function(elapsedTime) {
-        this.angle += 0.1 * elapsedTime; // Spins the player alien saucer around
         let newX = this.x + (this.offsetX * this.speed * elapsedTime);
         let newY = this.y + (this.offsetY * this.speed * elapsedTime);
         if(newX < gameArea.canvas.width - this.width && newX >= 0) {
@@ -148,7 +147,17 @@ function component(x, y, width, height, color, offsetX=.0, offsetY=.0, speed=1, 
         }
         this.offsetX = 0;
         this.offsetY = 0;
-    }    
+    }
+
+    this.animate = function(elapsedTime) {
+        this.angle += 0.1 * elapsedTime; // Spins the player alien saucer around
+    }
+    
+    this.update = function(elapsedTime) {
+        this.animate(elapsedTime);
+        this.newPos(elapsedTime);
+        this.draw();
+    }
 }
 
 // Tests whether two component rectangles collide. Returns true if they do. 
@@ -170,7 +179,7 @@ function projectile(x, y, width, height, offsetX=0, offsetY=0, speed=10, color='
     projectileListIndex++; 
     projectileList[this.id] = this;
     
-    // Move projectile to offset direction. If this pojectile goes outside area bounds, delete it.
+    // Move the projectile to offset direction. If this pojectile goes outside area bounds, delete it.
     this.newPos = function(elapsedTime) {
         this.x += this.offsetX * speed * elapsedTime;
         this.y += this.offsetY * speed * elapsedTime;
@@ -181,6 +190,11 @@ function projectile(x, y, width, height, offsetX=0, offsetY=0, speed=10, color='
         if(this.y < 0 || this.y > gameArea.canvas.height){
             delete projectileList[this.id];
         }
+    }
+    
+    this.animate = function(elapsedTime) {
+        this.offsetX += Math.random() * 0.01;
+        this.offsetY += Math.random() * 0.01;
     }
 }
 
@@ -220,7 +234,14 @@ function enemy(x, y, width, height, offsetX=0, offsetY=0, speed=1, color='green'
     
     // Move toward the player character
     this.newPos = function(elapsedTime) {
-        // Make enemy rocks sway
+        let dir = calculateDirection(this.x, this.y, character.x, character.y);
+        
+        this.x += dir[0] * speed * elapsedTime;
+        this.y += dir[1] * speed * elapsedTime;
+    }
+    
+     // Make enemy rocks sway
+    this.animate = function(elapsedTime) {
         let magnitude = Math.random() * 0.05;
         if (this.swayDir == "start") {
             this.angle -= elapsedTime * magnitude;
@@ -229,11 +250,6 @@ function enemy(x, y, width, height, offsetX=0, offsetY=0, speed=1, color='green'
             this.angle += elapsedTime * magnitude;
             if (this.angle >= this.swayEnd) this.swayDir = "start"
         }
-        
-        let dir = calculateDirection(this.x, this.y, character.x, character.y);
-        
-        this.x += dir[0] * speed * elapsedTime;
-        this.y += dir[1] * speed * elapsedTime;
     }
 }
 
@@ -292,25 +308,22 @@ function calculatePlayerMovementOffsets() {
 
 function updateGameArea(currentTime) {
     if(!isPaused) {
-        const secondsSinceLastRender = (currentTime - lastRenderTime) / 1000;
+        const secondsSinceLastRender = (currentTime - lastRenderTime) * 0.001; // milliseconds to seconds; 1/1000 = 0.001, multiplication is faster than division 
         const movementMult = globalSpeedMult  * secondsSinceLastRender;
         
         gameArea.clear();
         
-        calculatePlayerMovementOffsets();
-        character.newPos(movementMult);    
-        character.update();
+        calculatePlayerMovementOffsets(); 
+        character.update(movementMult);
     
         for(let key in projectileList){
             let projectile = projectileList[key];
-            projectile.newPos(movementMult);
-            projectile.update();
+            projectile.update(movementMult);
         }
     
         for(let key in enemyList){
             let enemy = enemyList[key];
-            enemy.newPos(movementMult);
-            enemy.update();
+            enemy.update(movementMult);
             if(testCollision(character, enemy)) {
                 hp -= movementMult;
             }
