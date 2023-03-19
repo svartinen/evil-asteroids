@@ -1,5 +1,6 @@
 body {
-	background: #303342;
+	background: url("assets/menu_backgroung.png") no-repeat center fixed;
+	background-size: cover;
 }
 
 canvas {
@@ -96,7 +97,7 @@ canvas {
 	border: 5px solid black;
 	border-radius: 7px;
 	line-height: 1.5;
-	background: #827d7d;
+	background: rgba(130, 125, 125, 0.5);
 	padding: 15px;
 	font-style: oblique;
 	color: white;
