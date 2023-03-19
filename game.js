@@ -9,10 +9,7 @@ var particleList;
 var particleListIndex;
 var isPaused;
 var enemyInterval;
-
-const playerMovements = 
-{"ArrowUp": false, "ArrowDown": false, "ArrowLeft": false, "ArrowRight": false, 
-"KeyW": false, "KeyS": false, "KeyA": false, "KeyD": false};
+var playerMovements;
 
 var lastRenderTime = 0;
 const globalSpeedMult = 60;
@@ -48,6 +45,11 @@ function startGame() {
     particleList = {};
     particleListIndex = 0;
     isPaused = false;
+    
+    playerMovements = {
+        "ArrowUp": false, "ArrowDown": false, "ArrowLeft": false, "ArrowRight": false, 
+        "KeyW": false, "KeyS": false, "KeyA": false, "KeyD": false
+    };
     
     // Set up the event listeners for controls:
     document.addEventListener('keydown', keyboardControlsManager);
