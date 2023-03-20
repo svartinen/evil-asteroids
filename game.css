@@ -21,7 +21,7 @@ canvas {
 }
 
 #gameBackground {
-	border: solid .5px red;
+	border: solid thin red;
 	z-index: 1;
 }
 
