@@ -1,15 +1,18 @@
-body {
+html, body {
 	background: url("assets/menu_backgroung.png") no-repeat center fixed;
 	background-size: cover;
+	height: 100%;
+	min-height: 100%;
+	margin: 0;
 }
 
 canvas {
 	margin-left: auto; 
 	margin-right: auto;
-	margin-top: auto; 
+	margin-top: auto;
 	margin-bottom: auto;
 	position: absolute;
-	left: 0; 
+	left: 0;
 	right: 0;
 	top: 0; 
 	bottom: 0; 	
@@ -38,58 +41,63 @@ canvas {
 	position: absolute;
 	margin-left: auto;
 	margin-right: auto;
-	left: 0; 
-	right: 0; 
+	left: 0;
+	right: 0;
 	width: 30%;
 	display: block;
-	background: rgba(130, 125, 125, 0.5);
-	border: 5px solid black;
-	border-radius: 7px;
+	background: rgba(130, 125, 125, 0.1);
+	border: solid thin red;
+	backdrop-filter: blur(4px);
 }
 
 #title {
 	font-family: "Copperplate";
 	font-size: 3em;
-	margin: auto;
 	color: red;
 	text-shadow: 2px 2px black;
 }
 
 #mainMenu {
-	position: absolute;
-	width: 100%;
 	height: 100%;
-	top: 0;
-	left: 0;
+	width: 100%;
 	font-family: "Verdana";
 	font-size: 2em;
 	text-align: center;
 	z-index: 4;
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	position: absolute;
 }
 
 #menuFlex {
-	display: flex;
-	align-items: center;
-	flex-flow: column; 
+	background: rgba(130, 125, 125, 0.1);
+	width: 50%;
+	flex: 1 1 auto;
+	box-shadow: 0 30px 40px 40px rgba(0,0,0,.6);
+	backdrop-filter: blur(4px);
+	border: solid thin red;
+	border-bottom: none;
+	border-top: none;
 }
 
 #newGame, #continueGame {
 	vertical-align: middle;
-	border: 5px solid black;
-	border-radius: 7px;
-	background-color: white;
+	border: solid thin red;
+	backdrop-filter: blur(40px);	
 	color: red;
 	width: 10em;
 	margin: 10px auto;
 	padding: 10px;
-	text-shadow: 1px 1px maroon;
+	text-shadow: 1px 1px black;
 }
 
 #newGame:hover, #continueGame:hover {
-	background-color: red;
+	background: rgba(255, 0, 0, 0.25);
+	border: solid thin white;
 	color: white;
-	font-weight: bold;
-	width: 11em;
+	width: 12em;
+	font-size: 1.1em;
 }
 
 #continueGame, #gameOver, #finalScore {
@@ -99,38 +107,36 @@ canvas {
 #gameOver {
 	font-family: "Impact";
 	font-weight: bold;
-	font-size: 5em;
-	color: red;
-	text-shadow: 2px 2px white;
+	font-size: 3em;
+	color: white;
+	text-shadow: 6px 6px red;
 }
 
 #finalScore {
-	font-size: 2em;
-	color: red;
-	text-shadow: 2px 2px white;
+	font-size: 1.5em;
+	color: white;
+	text-shadow: 2px 2px black;
+	font-style: oblique;
 }
 
 #controlsTooltip {
-	border: 5px solid black;
-	border-radius: 7px;
+	border: solid thin red;
 	line-height: 1.5;
-	background: rgba(130, 125, 125, 0.5);
-	padding: 15px;
+	background: rgba(130, 125, 125, 0.1);
+	padding-top: 10px;
+	padding-bottom: 10px;
 	font-style: oblique;
-	color: white;
+	color: gray;
 	text-shadow: 2px 2px black;
-	position: fixed;
-	left: 0;
-	bottom: 0;
-	width: 100%;
+	box-shadow: 0 30px 40px 40px rgba(0,0,0,.6);
+	flex: 0 1 auto;
+	backdrop-filter: blur(4px);
+	width: 99%;
 }
 
 mark {
-	background-color: white;
-	border-radius: 7px;
-	border: 1px solid black;
-	padding: 2px;
+	background: none !important;
 	color: red;
 	font-style: normal;
-	text-shadow: 1px 1px maroon;
+	text-shadow: 1px 1px black;
 }
