@@ -135,7 +135,6 @@ function component(x, y, width, height, color, offsetX=.0, offsetY=.0, speed=1, 
         } else {
             ctx.fillStyle = this.color;
             ctx.fillRect(this.x, this.y, this.width, this.height);
-            ctx.restore();
         }
         ctx.restore();
     }
@@ -167,13 +166,47 @@ function component(x, y, width, height, color, offsetX=.0, offsetY=.0, speed=1, 
 
 // Tests whether two component rectangles collide. Returns true if they do. 
 function testCollision(c1, c2) {
-    let x1 = c1.x - c1.width / 2;
-    let y1 = c1.y - c1.height / 2;
+    // Do a simple bounding box check first:
+    let x1 = c1.x;
+    let x2 = c2.x; 
+    let y1 = c1.y;
+    let y2 = c2.y;
     
-    let x2 = c2.x - c2.width / 2;
-    let y2 = c2.y - c2.height / 2;
+    let x1Width = c1.width;
+    let x2Width = c2.width;
+    let x1Height = c1.height;
+    let x2Height = c2.height;
     
-    return x1 <= x2 + c2.width && x2 <= x1 + c1.width && y1 <= y2 + c2.height && y2 <= y1 + c1.height; 
+    if (c1.angle != 0) { // If c1 has been rotated, calculate its bounding box
+        x1Width = c1.width * Math.abs(Math.cos(c1.angle)) + c1.height * Math.abs(Math.sin(c1.angle));
+        x1Height = c1.width * Math.abs(Math.sin(c1.angle)) + c1.height * Math.abs(Math.cos(c1.angle)); 
+
+        x1 = c1.x + 0.5 * (c1.width - x1Width); 
+        y1 = c1.y + 0.5 * (c1.height - x1Height);
+    }
+    
+    if (c2.angle != 0) { // If c2 has been rotated, calculate its bounding box
+        x2Width = c2.width * Math.abs(Math.cos(c2.angle)) + c2.height * Math.abs(Math.sin(c2.angle));
+        x2Height = c2.width * Math.abs(Math.sin(c2.angle)) + c2.height * Math.abs(Math.cos(c2.angle));
+        
+        x2 = c2.x + 0.5 * (c2.width - x2Width); 
+        y2 = c2.y + 0.5 * (c2.height - x2Height); 
+    }
+    
+    let edge1 = x1 <= x2 + x2Width;
+    let edge2 = x2 <= x1 + x1Width;
+    
+    let edge3 = y1 <= y2 + x2Height;
+    let edge4 = y2 <= y1 + x1Height;
+     
+    let boundingBoxCollision = edge1 && edge2 && edge3 && edge4;
+    
+    if (c1.angle == 0 && c2.angle == 0){ // Regular rectangles
+        return boundingBoxCollision;
+    } else { // Rotated rectangles
+        if (boundingBoxCollision) return detectRectangleCollisionSAT(c1, c2); // Do a more elaborate check (SAT, collisions.js)
+    }
+    return false;
 }
 
 // Object manager for the projectiles shot by the player
@@ -251,13 +284,15 @@ function calculateDirection(x, y, targetX, targetY) {
 
 // Generates a new pojectile that starts at the player player position and advances toward the point (targetX, targetY) 
 function generateProjectileFromCharacter(targetX, targetY){
-    let height = 5;
-    let width = 30;
+    let height = 40;
+    let width = 2;
     
-    let dir = calculateDirection(character.x, character.y, targetX, targetY);
-    let radAngle = Math.atan2(dir[1], dir[0]);
+    let charMiddleX = character.x + character.width * 0.5; 
     
-    new projectile(character.x, character.y, width, height, dir[0], dir[1], 10, 'red', radAngle);
+    let dir = calculateDirection(charMiddleX, character.y, targetX, targetY);
+    let radAngle = Math.atan2(-dir[0], dir[1]);
+    
+    new projectile(charMiddleX, character.y, width, height, dir[0], dir[1], 10, 'red', radAngle);
 }
 
 // Object manager for the enemy asteroids
@@ -477,7 +512,7 @@ function updateGameArea(currentTime) {
             if(testCollision(character, enemy)) {
                 hp -= movementMult;
                 let dir = calculateDirection(character.x, character.y, enemy.x, enemy.y);
-                generateCollisionParticles(character.x + dir[0] + character.width * 0.5, character.y + dir[1] + character.height  * 0.5, 5);
+                generateCollisionParticles(character.x + dir[0] + character.width * 0.5, character.y + dir[1] + character.height * 0.5, 5);
             }
         } 
         
