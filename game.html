@@ -5,7 +5,7 @@
   <meta charset="utf-8"/>
   <link rel="stylesheet" href="game.css">
 </head>
-<body>
+<body onblur="pause()">
 	<div id="gameContainer">
 		<canvas id="gameWindow">Your browser doesn't support canvas!</canvas>
 		<canvas id="gameBackground"></canvas>
@@ -16,8 +16,8 @@
 			<div id="title">Evil Asteroids</div>
 			<div id="gameOver">GAME OVER</div>
 			<div id="finalScore"></div>
+			<div id="continueGame" onclick="unpause()">Continue Game</div>
 			<div id="newGame" onclick="startGame()">New Game</div>
-			<div id="continueGame" onclick="togglePause()">Continue Game</div>
 		</div>
 		<div id="controlsTooltip">Use <mark>WASD</mark> or <mark>Arrow Keys</mark> to move around.<br>Click <mark>Left Mouse Button</mark> to shoot in the direction of the mouse pointer.<br>Press <mark>P</mark> or <mark>ESC</mark> to pause.</div>
 	</div>

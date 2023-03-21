@@ -556,17 +556,26 @@ function updateGameInfo() {
     gameInfo.innerHTML = "HP: " + currentHP + "<br>Score: " + score.toString().padEnd(6, "\u00A0");
 }
 
-function togglePause() {
+function pause() {
     let menu = document.getElementById("mainMenu");
+    isPaused = true; 
+    menu.style.display = "flex";
+    clearInterval(enemyInterval);
+}
+
+function unpause() {
+    let menu = document.getElementById("mainMenu");
+    isPaused = false;
+    menu.style.display = "none";
+    enemyInterval = setInterval(function () {generateEnemy(enemySpeed, enemyAsset, imageAsset)}, enemySpawnrate);
+    resetMovementKeys();
+}
+
+function togglePause() {  
     if(!isPaused) {
-        isPaused = true; 
-        menu.style.display = "flex";
-        clearInterval(enemyInterval);
+        pause();
     } else {
-        isPaused = false;
-        menu.style.display = "none";
-        enemyInterval = setInterval(function () {generateEnemy(enemySpeed, enemyAsset, imageAsset)}, enemySpawnrate);
-        resetMovementKeys();
+        unpause();
     }
 }
 
