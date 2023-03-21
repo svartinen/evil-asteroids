@@ -5,6 +5,7 @@ html, body {
 	min-height: 100%;
 	margin: 0;
 	user-select: none;
+	cursor: url("assets/cursor.svg"), auto;
 }
 
 canvas {
@@ -31,7 +32,7 @@ canvas {
 
 #gameWindow {
 	z-index: 2;
-	cursor: crosshair;
+	cursor: url("assets/cursor_crosshair.svg"), crosshair;
 }
 
 #gameInfo {
@@ -119,7 +120,8 @@ canvas {
 	margin: 10px auto;
 	padding: 10px;
 	text-shadow: 1px 1px black;
-	cursor: pointer;
+	cursor: url("assets/cursor_pointer.svg"), pointer;
+	box-shadow: 0 0 10px black;
 }
 
 #newGame:hover, #continueGame:hover {
