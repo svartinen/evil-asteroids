@@ -73,19 +73,29 @@ function startGame() {
 
 // A black canvas which works as the game area
 var gameArea = {
+    gameStarted: false,
     canvas: document.getElementById('gameWindow'),
     container: document.getElementById('gameContainer'),
     start: function() { 
-        // Scale the game area to the current viewport and display it:
-        this.canvas.width = window.innerWidth * 0.9;
-        this.canvas.height = window.innerHeight * 0.9;
+        this.gameStarted = true;
+        
+        // Render the game at a set resolution and scale it to the viewport via css:
+        this.canvas.width = 1280;
+        this.canvas.height = 720;
         this.context = this.canvas.getContext("2d");
         this.container.style.display = "inline";
+        
+        let scalingFactor = Math.min(window.innerWidth / this.canvas.width, window.innerHeight / this.canvas.height) * 0.9;
+        
+        this.canvas.style.width = this.canvas.width * scalingFactor + "px";
+        this.canvas.style.height = this.canvas.height * scalingFactor + "px";
         
         // Only draw the background once in the beginning:
         let background = document.getElementById('gameBackground');
         background.width = this.canvas.width;
         background.height = this.canvas.height;
+        background.style.width = this.canvas.style.width;
+        background.style.height = this.canvas.style.height;
         let backgroundContext = background.getContext("2d", {alpha: false});
         backgroundContext.beginPath();
         backgroundContext.rect(0, 0, this.canvas.width, this.canvas.height);
@@ -94,6 +104,21 @@ var gameArea = {
     },
     clear: function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+}
+
+function drawAllEntities() {
+    character.draw();
+    
+    Object.keys(enemyList).forEach(key => enemyList[key].draw());
+    Object.keys(projectileList).forEach(key => projectileList[key].draw());
+    Object.keys(particleList).forEach(key => particleList[key].draw());
+}
+
+function resizeGame() {
+    if (gameArea.gameStarted) {
+        gameArea.start(); // Simply re-initialize the game area to resize it...
+        drawAllEntities(); // ...and redraw all entities on it
     }
 }
 
@@ -618,6 +643,11 @@ function mouseControlsManager(e) {
         let rect = e.target.getBoundingClientRect();
         let x = e.clientX - rect.left;
         let y = e.clientY - rect.top;
-        generateProjectileFromCharacter(x, y);
+        
+        // Convert mouse coords to canvas coords
+        const canvasX = (gameArea.canvas.width / gameArea.canvas.clientWidth) * x;
+        const canvasY = (gameArea.canvas.height / gameArea.canvas.clientHeight) * y;
+        
+        generateProjectileFromCharacter(canvasX, canvasY);
     }
 }
