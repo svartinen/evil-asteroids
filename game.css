@@ -36,7 +36,7 @@ canvas {
 	z-index: 3;
 	font-family: monospace;
 	font-size: 2em;
-	text-shadow: 2px 2px black;
+	text-shadow: 2px 2px 4px black;
 	color: red;
 	position: absolute;
 	margin-left: auto;
