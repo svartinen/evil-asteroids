@@ -42,7 +42,7 @@ canvas {
 #gameInfo {
 	z-index: 3;
 	font-family: monospace;
-	font-size: max(2vw, 16px);
+	font-size: max(2rem, 18px);
 	text-shadow: 2px 2px 4px black;
 	color: red;
 	position: absolute;
@@ -58,19 +58,18 @@ canvas {
 
 #title {
 	font-family: "Copperplate";
-	font-size: max(5vw, 40px);
+	font-size: max(5rem, 40px);
 	color: red;
 	text-shadow: 2px 2px black;
 	border-bottom: solid thin red;
 	background: rgba(130, 125, 125, 0.2);
-	margin-bottom: 5vh;
 }
 
 #mainMenu {
 	height: 100%;
 	width: 100%;
 	font-family: "Verdana";
-	font-size: max(2vw, 16px);
+	font-size: max(2rem, 18px);
 	text-align: center;
 	z-index: 4;
 	display: flex;
@@ -85,12 +84,26 @@ canvas {
 #menuFlex {
 	background: rgba(130, 125, 125, 0.1);
 	width: 50%;
+	min-width: 20rem;
 	flex: 1 1 auto;
 	box-shadow: 0 30px 40px 40px rgba(0,0,0,.6);
 	backdrop-filter: blur(4px);
 	border: solid thin red;
 	border-bottom: none;
 	border-top: none;
+	display: flex;
+	flex-flow: column;
+}
+
+#menuButtonsFlex {
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	justify-content: center;
+	flex-basis: 100%;
+	gap: 2vh;
+	margin-top: 2vh;
+	margin-bottom: 2vh;
 }
 
 #mainMenu::-webkit-scrollbar {
@@ -112,42 +125,108 @@ canvas {
   background: maroon; 
 }
 
-#newGame, #continueGame {
+.menuButton {
 	background: rgba(130, 125, 125, 0.2);
-	vertical-align: middle;
 	border: ridge thick red;
-	backdrop-filter: blur(40px);	
+	backdrop-filter: blur(40px);
 	color: red;
-	width: 80%;
-	margin: 10px auto;
+	width: 70%;
 	padding: 10px;
 	text-shadow: 1px 1px black;
 	cursor: url("assets/cursor_pointer.svg"), pointer;
 	box-shadow: 0 0 10px black;
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	justify-content: center;
+	flex: 1;
+	max-height: 10rem;
 }
 
-#newGame:hover, #continueGame:hover {
+.menuButton:hover {
 	background: rgba(255, 0, 0, 0.25);
 	border: ridge thick white;
 	color: white;
-	width: 85%;
-	font-size: max(2.1vw, 18px);
+	width: 74e3er5%;
+	font-size: max(2.1rem, 20px);
 }
 
-#continueGame, #gameOver, #finalScore {
+#menuSelection {
+	width: 80%;
+	padding: 10px;
+	border: ridge thick transparent;
+	color: red;
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 2vh;
+}
+
+#menuSelectionInner {
+	width: 100%;
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+	justify-content: center;
+	gap: 2vh;
+	flex: 1;
+}
+
+#difficultyTooltip {
+	font-size: max(1.5rem, 16px);
+	border: solid thin red;
+	text-shadow: 1px 1px black;
+	background: rgba(130, 125, 125, 0.2);
+	padding: 10px;
+}
+
+.selectionItem + label {
+	cursor: url("assets/cursor_pointer.svg"), pointer;
+	background: rgba(130, 125, 125, 0.2);
+	border: groove thick red;
+	backdrop-filter: blur(40px);
+	flex: 1;
+	padding: 10px;
+}
+
+.selectionItem + label:hover {
+	color: white;
+	background: rgba(255, 0, 0, 0.25);
+	border-left: ridge 8px white;
+	border-right: ridge 8px white;
+	border-top: ridge thick white;
+	border-bottom: ridge thick white;
+}
+
+.selectionItem {
+    display: none;
+}
+
+.selectionItem:checked + label{
+	color: white;
+	background: rgba(255, 0, 0, 0.25);
+	border: ridge thick white;
+}
+
+.pauseMenuItem, .endScreenItem {
 	display: none;
+}
+
+.mainMenuExclusiveItem {
+	display: flex;
 }
 
 #gameOver {
 	font-family: "Impact";
 	font-weight: bold;
-	font-size: max(4vw, 24px);
-	color: white;
-	text-shadow: 6px 6px red;
+	font-size: max(4rem, 24px);
+	color: red;
+	text-shadow: 2px 2px white;
 }
 
 #finalScore {
-	font-size: max(2.5vw, 20px);
+	font-size: max(2.5rem, 20px);
 	color: white;
 	text-shadow: 2px 2px black;
 	font-style: oblique;
@@ -174,4 +253,26 @@ mark {
 	color: red;
 	font-style: normal;
 	text-shadow: 1px 1px black;
+}
+
+#scoreMenu {
+	display: none;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	color: white;
+	font-family: monospace;
+}
+
+ol {
+	list-style-position: inside;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+}
+
+ol:before {
+	content: attr(list-label);
+	font-size: max(4rem, 24px);
+	font-weight: bold;
 }

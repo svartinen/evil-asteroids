@@ -14,10 +14,27 @@
 	<div id="mainMenu">
 		<div id="menuFlex">
 			<div id="title">Evil Asteroids</div>
-			<div id="gameOver">GAME OVER</div>
-			<div id="finalScore"></div>
-			<div id="continueGame" onclick="unpause()">Continue Game</div>
-			<div id="newGame" onclick="startGame()">New Game</div>
+			<div id="menuButtonsFlex">
+				<div class="endScreenItem" id="gameOver">GAME OVER</div>
+				<div class="endScreenItem" id="finalScore"></div>
+				<div class="menuButton pauseMenuItem" id="continueGame" onclick="unpause()">Continue Game</div>
+				<div class="menuButton" id="newGame" onclick="startGame()">New Game</div>
+				<div class="menuButton mainMenuExclusiveItem" id="highscores" onclick="showHighscores()">Highscores</div>
+				<div class="menuButton pauseMenuItem" id="backToMainMenu" onclick="window.location.reload()">Return To Title</div>
+				<div class="mainMenuExclusiveItem" id="menuSelection">
+					<div id="difficultyTooltip">Select Difficulty:</div>
+					<div id="menuSelectionInner">
+						<input class="selectionItem" type="radio" id="diffEasy" name="difficultySelection" value="easy"> <label for="diffEasy">Easy</label>
+						<input class="selectionItem" type="radio" id="diffMedium" name="difficultySelection" value="medium" checked > <label for="diffMedium">Medium</label>
+						<input class="selectionItem" type="radio" id="diffHard" name="difficultySelection" value="hard"> <label for="diffHard">Hard</label>
+					</div>
+				</div>
+			</div>
+			<div id="scoreMenu">
+				<ol id="highscoresEasy" list-label="Easy">No scores yet!</ol>
+				<ol id="highscoresMedium" list-label="Medium">No scores yet!</ol>
+				<ol id="highscoresHard" list-label="Hard">No scores yet!</ol>
+			</div>
 		</div>
 		<div id="controlsTooltip">Use <mark>WASD</mark> or <mark>Arrow Keys</mark> to move around.<br>Click <mark>Left Mouse Button</mark> to shoot in the direction of the mouse pointer.<br>Press <mark>P</mark> or <mark>ESC</mark> to pause.</div>
 	</div>

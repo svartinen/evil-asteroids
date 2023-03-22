@@ -14,8 +14,12 @@ var playerMovements;
 var lastRenderTime = 0;
 const globalSpeedMult = 60;
 
-const enemySpeed = 1;
-const enemySpawnrate = 500;
+var enemySpeed;
+var enemySpawnrate;
+var difficulty;
+const saveGame = "saveGame";
+const highscoresPerDifficulty = 5;
+const difficulties = ["easy", "medium", "hard"];
 
 const assetsDir = "assets/"
 const playerAsset = assetsDir + "saucer.png"
@@ -53,22 +57,65 @@ function startGame() {
     document.addEventListener('keyup', keyboardControlsManager);
     gameArea.container.addEventListener('click', mouseControlsManager);
     
-    // Set up the pause menu and hide it for now:
-    let continueGame = document.getElementById("continueGame");
-    continueGame.style.display = "block";
-    let gameOver = document.getElementById("gameOver");
-    gameOver.style.display = "none";
-    let menu = document.getElementById("mainMenu");
-    menu.style.display = "none";
-    menu.style.background = "rgba(0,0,0,0.5)"; // Adds a nice shadow effect over the game area
-    let finalScore = document.getElementById('finalScore');
-    finalScore.style.display = "none";
+    // Set up the pause menu:
+    readyPauseMenu();
+    
+    // Set the game difficulty level:
+    setDifficulty();
     
     // Spawn new enemies at a steady rate of time:
     enemyInterval = setInterval(function () {generateEnemy(enemySpeed, enemyAsset, imageAsset)}, enemySpawnrate);
     
     // Start game loop:
     requestAnimationFrame(updateGameArea);
+}
+
+function readyPauseMenu() {
+    // Show everything that needs to be seen on the pause menu:
+    let pauseMenuItems = document.getElementsByClassName("pauseMenuItem");
+    for (let i = 0; i < pauseMenuItems.length; i++) {
+        pauseMenuItems[i].style.display = "flex";
+    }
+    // Hide everything that is only meant to be seen on the main menu:
+    let mainMenuExclusiveItems = document.getElementsByClassName("mainMenuExclusiveItem");
+    for (let i = 0; i < mainMenuExclusiveItems.length; i++) {
+        mainMenuExclusiveItems[i].style.display = "none";
+    }
+    // Hide everything that is only meant to be seen on the end screen:
+    let endScreenItems = document.getElementsByClassName("endScreenItem");
+    for (let i = 0; i < endScreenItems.length; i++) {
+        endScreenItems[i].style.display = "none";
+    }
+    let menu = document.getElementById("mainMenu");
+    menu.style.display = "none";
+    menu.style.background = "rgba(0,0,0,0.5)"; // Adds a nice shadow effect over the game area
+}
+
+function setDifficulty() {
+    let difficultySelectors = document.getElementsByName("difficultySelection");
+    for(var i = 0; i < difficultySelectors.length; i++){
+        if(difficultySelectors[i].checked){
+            difficulty = difficultySelectors[i].value;
+            break;
+        }
+    }
+    
+    switch(difficulty) {
+        case "easy":
+            enemySpeed = 0.5;
+            enemySpawnrate = 1000;
+            break;
+        case "medium":
+            enemySpeed = 1;
+            enemySpawnrate = 500;
+            break;
+        case "hard":
+            enemySpeed = 2;
+            enemySpawnrate = 250;
+            break;
+        default:
+            console.log("Unknown difficulty level setting: '" + difficulty + "'. Expected 'easy', 'medium', or 'hard'.")
+    }
 }
 
 // A black canvas which works as the game area
@@ -634,17 +681,67 @@ function togglePause() {
     }
 }
 
+function checkScore() {
+    let save = JSON.parse(window.localStorage.getItem(saveGame)) || {};
+    let lowestScore = 0;
+    let index = highscoresPerDifficulty - 1;
+    if(difficulty in save && index in save[difficulty]) {
+        lowestScore = save[difficulty][index].score;
+    } else if(!(difficulty in save)) {
+        save[difficulty] = [];
+    }
+    
+    if (score > lowestScore) {
+        const name = prompt("Congratulations! You've reached a new high score. Please, enter your name:");
+        const newScore = {score, name};
+        
+        save[difficulty].push(newScore);
+        save[difficulty].sort((score1, score2) => score2.score - score1.score);
+        save[difficulty].splice(highscoresPerDifficulty);
+        
+        window.localStorage.setItem(saveGame, JSON.stringify(save));
+    }
+}
+
+function showHighscores() {
+    let save = JSON.parse(window.localStorage.getItem(saveGame)) || {};
+    
+    let scoreMenu = document.getElementById("scoreMenu");
+    scoreMenu.style.display = "flex";
+    
+    for (let i in difficulties) {
+        difficulty = difficulties[i];
+        if (difficulty in save) {
+            let scores = document.getElementById("highscores" + difficulty[0].toUpperCase() + difficulty.slice(1));
+            scores.innerHTML = save[difficulty].map((currentScore) => "<li>" + currentScore.name + ", " + currentScore.score + "</li>").join("");
+        }
+    }
+    let backButton = document.getElementById("backToMainMenu");
+    backButton.style.display = "flex";
+    
+    let newGameButton = document.getElementById("newGame");
+    newGameButton.style.display = "none";
+    
+    let mainMenuExclusiveItems = document.getElementsByClassName("mainMenuExclusiveItem");
+    for (let i = 0; i < mainMenuExclusiveItems.length; i++) {
+        mainMenuExclusiveItems[i].style.display = "none";
+    }
+}
+
 function showEndScreen() {
     // Show the main menu with the correct elements, including the player's final score:
     let menu = document.getElementById("mainMenu");
     menu.style.display = "flex";
     let continueGame = document.getElementById("continueGame");
     continueGame.style.display = "none";
-    let gameOver = document.getElementById("gameOver");
-    gameOver.style.display = "block";
     let finalScore = document.getElementById('finalScore');
     finalScore.innerHTML = "Final Score: " + score;
-    finalScore.style.display = "block";
+    
+    // Show everything that is meant to be seen on the end screen:
+    let endScreenItems = document.getElementsByClassName("endScreenItem");
+    for (let i = 0; i < endScreenItems.length; i++) {
+        endScreenItems[i].style.display = "flex";
+    }   
     
     // Stop accepting commands from player:
     document.removeEventListener('keydown', keyboardControlsManager);
@@ -653,6 +750,8 @@ function showEndScreen() {
     
     // Stop spawning enemies:
     clearInterval(enemyInterval);
+    
+    checkScore();
 }
 
 function keyboardControlsManager(e) {
