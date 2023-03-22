@@ -28,9 +28,9 @@ const enemyRockImage = new Image();
 const assets = {[playerAsset]: playerImage, [enemyAsset]: enemyRockImage}
 
 function startGame() {
-    // Set up the player character and the game area:
-    character = new component(170, 170, 30, 30, playerAsset, offsetX=0, offsetY=0, speed=5, type=imageAsset);  
+    // Set up the game area and the player character:
     gameArea.start();
+    character = new component(gameArea.canvas.width * 0.5, gameArea.canvas.height * 0.5, 30, 30, playerAsset, offsetX=0, offsetY=0, speed=5, type=imageAsset);
     
     playerImage.src = playerAsset;
     enemyRockImage.src = enemyAsset;
@@ -81,8 +81,8 @@ var gameArea = {
         this.gameStarted = true;
         
         // Render the game at a set resolution and scale it to the viewport via css:
-        this.canvas.width = 1280;
-        this.canvas.height = 720;
+        this.canvas.width = 1920;
+        this.canvas.height = 1080;
         this.context = this.canvas.getContext("2d");
         this.container.style.opacity = "100";
         
