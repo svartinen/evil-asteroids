@@ -51,7 +51,7 @@ function startGame() {
     // Set up the event listeners for controls:
     document.addEventListener('keydown', keyboardControlsManager);
     document.addEventListener('keyup', keyboardControlsManager);
-    document.addEventListener('click', mouseControlsManager);
+    gameArea.container.addEventListener('click', mouseControlsManager);
     
     // Set up the pause menu and hide it for now:
     let continueGame = document.getElementById("continueGame");
@@ -84,7 +84,7 @@ var gameArea = {
         this.canvas.width = 1280;
         this.canvas.height = 720;
         this.context = this.canvas.getContext("2d");
-        this.container.style.display = "inline";
+        this.container.style.opacity = "100";
         
         let scalingFactor = Math.min(window.innerWidth / this.canvas.width, window.innerHeight / this.canvas.height) * 0.9;
         
@@ -103,7 +103,7 @@ var gameArea = {
         backgroundContext.fillStyle = "black";
         backgroundContext.fill();
         
-        if (window.innerHeight > window.innerWidth) { // Switch direction for tall screens
+        if (window.innerHeight > window.innerWidth) { // Switch rotation for tall screens
             this.canvas.style.transform = "rotate(90deg)";
             background.style.transform = "rotate(90deg)";
             this.rotated = true;
@@ -112,6 +112,10 @@ var gameArea = {
             background.style.transform = "";
             this.rotated = false;
         }
+        // Align the game information box with the top of the game canvas:
+        this.boundingRectangle = this.canvas.getBoundingClientRect();
+        let gameInfo = document.getElementById('gameInfo');
+        gameInfo.style.top = Math.max(this.boundingRectangle.top - 0.5 * gameInfo.clientHeight, 0) + "px";
     },
     clear: function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -547,9 +551,9 @@ function updateGameArea(currentTime) {
         
         gameArea.clear();
         
-        calculatePlayerMovementOffsets(); 
+        calculatePlayerMovementOffsets();
         character.update(movementMult);
-    
+        
         for(let key in projectileList){
             let projectile = projectileList[key];
             projectile.update(movementMult);
@@ -645,7 +649,7 @@ function showEndScreen() {
     // Stop accepting commands from player:
     document.removeEventListener('keydown', keyboardControlsManager);
     document.removeEventListener('keyup', keyboardControlsManager);
-    document.removeEventListener('click', mouseControlsManager);
+    gameArea.container.removeEventListener('click', mouseControlsManager);
     
     // Stop spawning enemies:
     clearInterval(enemyInterval);
@@ -666,7 +670,7 @@ function keyboardControlsManager(e) {
 function mouseControlsManager(e) {
     if(!isPaused) {
         // Get the mouse pointer position and shoot a new projectile toward it
-        let rect = e.target.getBoundingClientRect();
+        let rect = gameArea.boundingRectangle;
         let x = e.clientX - rect.left;
         let y = e.clientY - rect.top;
         
@@ -678,7 +682,6 @@ function mouseControlsManager(e) {
             canvasX = canvasY;
             canvasY = gameArea.canvas.height - tmp;
         }
-        
         generateProjectileFromCharacter(canvasX, canvasY);
     }
 }

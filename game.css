@@ -21,8 +21,12 @@ canvas {
 }
 #gameContainer {
 	width: 100%;
+	height: 100%;
 	text-align: center;
-	display: none;
+	display: block;
+	opacity: 0;
+	position: absolute;
+	z-index: 0;
 }
 
 #gameBackground {
@@ -32,7 +36,7 @@ canvas {
 
 #gameWindow {
 	z-index: 2;
-	cursor: url("assets/cursor_crosshair.svg"), crosshair;
+	cursor: url("assets/cursor_crosshair.svg") 16 16, crosshair;
 }
 
 #gameInfo {
@@ -46,9 +50,7 @@ canvas {
 	margin-right: auto;
 	left: 0;
 	right: 0;
-	top: 1vh;
 	width: 30%;
-	display: block;
 	background: rgba(130, 125, 125, 0.1);
 	border: solid thin red;
 	backdrop-filter: blur(4px);
