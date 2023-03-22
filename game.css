@@ -38,7 +38,7 @@ canvas {
 #gameInfo {
 	z-index: 3;
 	font-family: monospace;
-	font-size: 2em;
+	font-size: max(2vw, 16px);
 	text-shadow: 2px 2px 4px black;
 	color: red;
 	position: absolute;
@@ -56,7 +56,7 @@ canvas {
 
 #title {
 	font-family: "Copperplate";
-	font-size: 3em;
+	font-size: max(5vw, 40px);
 	color: red;
 	text-shadow: 2px 2px black;
 	border-bottom: solid thin red;
@@ -68,13 +68,16 @@ canvas {
 	height: 100%;
 	width: 100%;
 	font-family: "Verdana";
-	font-size: 2em;
+	font-size: max(2vw, 16px);
 	text-align: center;
 	z-index: 4;
 	display: flex;
 	flex-flow: column;
 	align-items: center;
 	position: absolute;
+	overflow-y: auto;
+	scrollbar-color: red white;
+	scrollbar-width: thin;
 }
 
 #menuFlex {
@@ -86,27 +89,24 @@ canvas {
 	border: solid thin red;
 	border-bottom: none;
 	border-top: none;
-	overflow-y: auto;
-	scrollbar-color: red white;
-	scrollbar-width: thin;
 }
 
-#menuFlex::-webkit-scrollbar {
+#mainMenu::-webkit-scrollbar {
     width: 5px;
 }
 
-#menuFlex::-webkit-scrollbar-track {
+#mainMenu::-webkit-scrollbar-track {
   background-color: white;
   box-shadow: inset 0 0 5px black; 
   border-radius: 15px;
 }
 
-#menuFlex::-webkit-scrollbar-thumb {
+#mainMenu::-webkit-scrollbar-thumb {
   background-color: red; 
   border-radius: 15px;
 }
 
-#menuFlex::-webkit-scrollbar-thumb:hover {
+#mainMenu::-webkit-scrollbar-thumb:hover {
   background: maroon; 
 }
 
@@ -116,7 +116,7 @@ canvas {
 	border: ridge thick red;
 	backdrop-filter: blur(40px);	
 	color: red;
-	width: 10em;
+	width: 80%;
 	margin: 10px auto;
 	padding: 10px;
 	text-shadow: 1px 1px black;
@@ -128,8 +128,8 @@ canvas {
 	background: rgba(255, 0, 0, 0.25);
 	border: ridge thick white;
 	color: white;
-	width: 12em;
-	font-size: 1.1em;
+	width: 85%;
+	font-size: max(2.1vw, 18px);
 }
 
 #continueGame, #gameOver, #finalScore {
@@ -139,16 +139,17 @@ canvas {
 #gameOver {
 	font-family: "Impact";
 	font-weight: bold;
-	font-size: 3em;
+	font-size: max(4vw, 24px);
 	color: white;
 	text-shadow: 6px 6px red;
 }
 
 #finalScore {
-	font-size: 1.5em;
+	font-size: max(2.5vw, 20px);
 	color: white;
 	text-shadow: 2px 2px black;
 	font-style: oblique;
+	margin-bottom: 5vh;
 }
 
 #controlsTooltip {

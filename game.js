@@ -74,6 +74,7 @@ function startGame() {
 // A black canvas which works as the game area
 var gameArea = {
     gameStarted: false,
+    rotated: false,
     canvas: document.getElementById('gameWindow'),
     container: document.getElementById('gameContainer'),
     start: function() { 
@@ -101,6 +102,16 @@ var gameArea = {
         backgroundContext.rect(0, 0, this.canvas.width, this.canvas.height);
         backgroundContext.fillStyle = "black";
         backgroundContext.fill();
+        
+        if (window.innerHeight > window.innerWidth) { // Switch direction for tall screens
+            this.canvas.style.transform = "rotate(90deg)";
+            background.style.transform = "rotate(90deg)";
+            this.rotated = true;
+        } else {
+            this.canvas.style.transform = "";
+            background.style.transform = "";
+            this.rotated = false;
+        }
     },
     clear: function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -493,18 +504,33 @@ function calculatePlayerMovementOffsets() {
     playerMovements.ArrowUp && (playerMovements.ArrowLeft || playerMovements.ArrowRight) ||
     playerMovements.KeyDown && (playerMovements.ArrowLeft|| playerMovements.ArrowRight) ? 0.707 : 1; // 1/sqrt(2) = ~0.707, for diagonal movement
     
-    if(playerMovements.KeyA || playerMovements.ArrowLeft){
-        character.offsetX -= movement;
-    } 
-    if(playerMovements.KeyW || playerMovements.ArrowUp){
-        character.offsetY -= movement;
-    } 
-    if(playerMovements.KeyD || playerMovements.ArrowRight){
-        character.offsetX += movement;
-    } 
-    if(playerMovements.KeyS || playerMovements.ArrowDown){
-        character.offsetY += movement;
-    } 
+    if (gameArea.rotated) { // Rotate controls to match the rotated canvas
+        if(playerMovements.KeyA || playerMovements.ArrowLeft){
+            character.offsetY += movement;
+        }
+        if(playerMovements.KeyW || playerMovements.ArrowUp){
+            character.offsetX -= movement;
+        }
+        if(playerMovements.KeyD || playerMovements.ArrowRight){
+            character.offsetY -= movement;
+        }
+        if(playerMovements.KeyS || playerMovements.ArrowDown){
+            character.offsetX += movement;
+        }
+    } else {
+        if(playerMovements.KeyA || playerMovements.ArrowLeft){
+            character.offsetX -= movement;
+        }
+        if(playerMovements.KeyW || playerMovements.ArrowUp){
+            character.offsetY -= movement;
+        }
+        if(playerMovements.KeyD || playerMovements.ArrowRight){
+            character.offsetX += movement;
+        }
+        if(playerMovements.KeyS || playerMovements.ArrowDown){
+            character.offsetY += movement;
+        }
+    }
 }
 
 function resetMovementKeys() {
@@ -645,8 +671,13 @@ function mouseControlsManager(e) {
         let y = e.clientY - rect.top;
         
         // Convert mouse coords to canvas coords
-        const canvasX = (gameArea.canvas.width / gameArea.canvas.clientWidth) * x;
-        const canvasY = (gameArea.canvas.height / gameArea.canvas.clientHeight) * y;
+        let canvasX = (gameArea.canvas.width / gameArea.canvas.clientWidth) * x;
+        let canvasY = (gameArea.canvas.height / gameArea.canvas.clientHeight) * y;
+        if (gameArea.rotated) { // Rotate the cursor position to match the rotated canvas
+            let tmp = canvasX;
+            canvasX = canvasY;
+            canvasY = gameArea.canvas.height - tmp;
+        }
         
         generateProjectileFromCharacter(canvasX, canvasY);
     }
