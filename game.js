@@ -656,7 +656,6 @@ function showEndScreen() {
 }
 
 function keyboardControlsManager(e) {
-    e.preventDefault();
     if(!isPaused) {
         if (e.code in playerMovements) { // The pressed key is WASD or one of the arrow keys
             playerMovements[e.code] = e.type === "keydown" // Toggle movement key values based on the player's keypresses
