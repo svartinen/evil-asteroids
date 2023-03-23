@@ -17,9 +17,6 @@ const globalSpeedMult = 60;
 var enemySpeed;
 var enemySpawnrate;
 var difficulty;
-const saveGame = "saveGame";
-const highscoresPerDifficulty = 5;
-const difficulties = ["easy", "medium", "hard"];
 
 const assetsDir = "assets/"
 const playerAsset = assetsDir + "saucer.png"
@@ -681,53 +678,6 @@ function togglePause() {
     }
 }
 
-function checkScore() {
-    let save = JSON.parse(window.localStorage.getItem(saveGame)) || {};
-    let lowestScore = 0;
-    let index = highscoresPerDifficulty - 1;
-    if(difficulty in save && index in save[difficulty]) {
-        lowestScore = save[difficulty][index].score;
-    } else if(!(difficulty in save)) {
-        save[difficulty] = [];
-    }
-    
-    if (score > lowestScore) {
-        const name = prompt("Congratulations! You've reached a new high score. Please, enter your name:");
-        const newScore = {score, name};
-        
-        save[difficulty].push(newScore);
-        save[difficulty].sort((score1, score2) => score2.score - score1.score);
-        save[difficulty].splice(highscoresPerDifficulty);
-        
-        window.localStorage.setItem(saveGame, JSON.stringify(save));
-    }
-}
-
-function showHighscores() {
-    let save = JSON.parse(window.localStorage.getItem(saveGame)) || {};
-    
-    let scoreMenu = document.getElementById("scoreMenu");
-    scoreMenu.style.display = "flex";
-    
-    for (let i in difficulties) {
-        difficulty = difficulties[i];
-        if (difficulty in save) {
-            let scores = document.getElementById("highscores" + difficulty[0].toUpperCase() + difficulty.slice(1));
-            scores.innerHTML = save[difficulty].map((currentScore) => "<li>" + currentScore.name + ", " + currentScore.score + "</li>").join("");
-        }
-    }
-    let backButton = document.getElementById("backToMainMenu");
-    backButton.style.display = "flex";
-    
-    let newGameButton = document.getElementById("newGame");
-    newGameButton.style.display = "none";
-    
-    let mainMenuExclusiveItems = document.getElementsByClassName("mainMenuExclusiveItem");
-    for (let i = 0; i < mainMenuExclusiveItems.length; i++) {
-        mainMenuExclusiveItems[i].style.display = "none";
-    }
-}
-
 function showEndScreen() {
     // Show the main menu with the correct elements, including the player's final score:
     let menu = document.getElementById("mainMenu");
@@ -741,7 +691,7 @@ function showEndScreen() {
     let endScreenItems = document.getElementsByClassName("endScreenItem");
     for (let i = 0; i < endScreenItems.length; i++) {
         endScreenItems[i].style.display = "flex";
-    }   
+    }
     
     // Stop accepting commands from player:
     document.removeEventListener('keydown', keyboardControlsManager);
@@ -751,7 +701,7 @@ function showEndScreen() {
     // Stop spawning enemies:
     clearInterval(enemyInterval);
     
-    checkScore();
+    checkScore(score, difficulty);
 }
 
 function keyboardControlsManager(e) {

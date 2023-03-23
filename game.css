@@ -1,7 +1,6 @@
-html, body {
+body {
 	background: url("assets/menu_backgroung.png") no-repeat center fixed;
 	background-size: cover;
-	height: 100%;
 	min-height: 100%;
 	margin: 0;
 	user-select: none;
@@ -50,7 +49,7 @@ canvas {
 	margin-right: auto;
 	left: 0;
 	right: 0;
-	width: 30%;
+	width: 30rem;
 	background: rgba(130, 125, 125, 0.1);
 	border: solid thin red;
 	backdrop-filter: blur(4px);
@@ -66,8 +65,8 @@ canvas {
 }
 
 #mainMenu {
+	min-width: 100%;
 	height: 100%;
-	width: 100%;
 	font-family: "Verdana";
 	font-size: max(2rem, 18px);
 	text-align: center;
@@ -76,15 +75,33 @@ canvas {
 	flex-flow: column;
 	align-items: center;
 	position: absolute;
-	overflow-y: auto;
-	scrollbar-color: red white;
+	overflow: auto;
+	scrollbar-color: red gray;
 	scrollbar-width: thin;
+}
+
+#mainMenu::-webkit-scrollbar {
+    width: 5px;
+}
+
+#mainMenu::-webkit-scrollbar-track {
+	background-color: white;
+	box-shadow: inset 0 0 5px black;
+	border-radius: 15px;
+}
+
+#mainMenu::-webkit-scrollbar-thumb {
+	background-color: red;
+	border-radius: 15px;
+}
+
+#mainMenu::-webkit-scrollbar-thumb:hover {
+	background: maroon;
 }
 
 #menuFlex {
 	background: rgba(130, 125, 125, 0.1);
-	width: 50%;
-	min-width: 20rem;
+	min-width: 50%;
 	flex: 1 1 auto;
 	box-shadow: 0 30px 40px 40px rgba(0,0,0,.6);
 	backdrop-filter: blur(4px);
@@ -106,28 +123,13 @@ canvas {
 	margin-bottom: 2vh;
 }
 
-#mainMenu::-webkit-scrollbar {
-    width: 5px;
-}
-
-#mainMenu::-webkit-scrollbar-track {
-  background-color: white;
-  box-shadow: inset 0 0 5px black; 
-  border-radius: 15px;
-}
-
-#mainMenu::-webkit-scrollbar-thumb {
-  background-color: red; 
-  border-radius: 15px;
-}
-
-#mainMenu::-webkit-scrollbar-thumb:hover {
-  background: maroon; 
+.menuItem {
+	width: 70%;
 }
 
 .menuButton {
 	background: rgba(130, 125, 125, 0.2);
-	border: ridge thick red;
+	border: ridge 5px red;
 	backdrop-filter: blur(40px);
 	color: red;
 	width: 70%;
@@ -141,20 +143,20 @@ canvas {
 	justify-content: center;
 	flex: 1;
 	max-height: 10rem;
+	min-height: 5rem;
+	font-size: max(2rem, 18px);
+	transition-duration: 0.1s;
 }
 
 .menuButton:hover {
 	background: rgba(255, 0, 0, 0.25);
-	border: ridge thick white;
+	border: ridge 5px white;
 	color: white;
-	width: 74e3er5%;
+	width: 75%;
 	font-size: max(2.1rem, 20px);
 }
 
 #menuSelection {
-	width: 80%;
-	padding: 10px;
-	border: ridge thick transparent;
 	color: red;
 	display: flex;
 	flex-flow: column;
@@ -188,6 +190,7 @@ canvas {
 	backdrop-filter: blur(40px);
 	flex: 1;
 	padding: 10px;
+	transition-duration: 0.1s;
 }
 
 .selectionItem + label:hover {
@@ -234,18 +237,16 @@ canvas {
 }
 
 #controlsTooltip {
-	border: solid thin red;
+	border-top: solid thin red;
 	line-height: 1.5;
 	background: rgba(130, 125, 125, 0.1);
-	padding-top: 10px;
-	padding-bottom: 10px;
+	padding: 10px;
 	font-style: oblique;
 	color: gray;
 	text-shadow: 2px 2px black;
 	box-shadow: 0 30px 40px 40px rgba(0,0,0,.6);
 	flex: 0 1 auto;
 	backdrop-filter: blur(4px);
-	width: 99%;
 }
 
 mark {
@@ -258,21 +259,57 @@ mark {
 #scoreMenu {
 	display: none;
 	flex-direction: column;
-	justify-content: center;
+	justify-content: space-evenly;
 	align-items: center;
 	color: white;
 	font-family: monospace;
+	flex: 1;
 }
 
-ol {
-	list-style-position: inside;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-}
-
-ol:before {
-	content: attr(list-label);
-	font-size: max(4rem, 24px);
+#scoreMenuTitle {
+	font-size: max(3.5rem, 20px);
 	font-weight: bold;
+	text-shadow: 1px 1px black;
+	color: white;
+	display: none;
+}
+
+.noScores {
+	text-align: center;
+	color: red;
+	text-shadow: 1px 1px black;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+caption {
+	text-align: center;
+	font-family: "Verdana";
+	font-weight: bold;
+	border: solid thin red;
+	text-shadow: 1px 1px black;
+	background: rgba(130, 125, 125, 0.2);
+	padding: 10px;
+}
+
+tr {
+	border-bottom: dotted thin red;
+	text-align: left;
+}
+
+tr:last-child {
+	border-bottom: none;
+}
+
+td:first-child {
+	width: 1ch;
+}
+
+td:nth-child(2) {
+	width: 30ch;
+	padding-left: 1ch;
+	padding-right: 1ch;
 }
