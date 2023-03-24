@@ -1,0 +1,55 @@
+#promptContainer {
+	width: 100vw;
+	height: 100vh;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	position: absolute;
+	z-index: 10;
+	background: rgba(0,0,0,0.5);
+	overflow: hidden;
+}
+
+
+#promptBox {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	background: rgba(130, 125, 125, 0.2);
+	border: ridge 10px red;
+	backdrop-filter: blur(40px);
+	color: red;
+	padding: 10px;
+	text-shadow: 1px 1px black;
+	box-shadow: 0 0 10px black;
+	font-size: max(2rem, 36px);
+}
+
+#promptCloseButton {
+	cursor: url("../assets/cursor_pointer.svg"), pointer;
+	opacity: 0.75;
+	width: 1.5rem;
+	height: 1.5rem;
+	position: absolute;
+	right: 0;
+	top: 0;
+	margin: 10px;
+}
+
+#promptCloseButton:hover {
+	opacity: 1;
+}
+
+#promptMessage {
+	margin-top: 1.5rem;
+	cursor: url("../assets/cursor_pointer.svg"), pointer;
+	padding: 10px;
+}
+
+#promptInput {
+	width: 90%;
+	padding: 10px;
+	margin: 8px 0;
+	border: 2px solid red;
+}

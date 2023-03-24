@@ -3,7 +3,8 @@
 <head>
   <title>Evil Asteroids</title>
   <meta charset="utf-8"/>
-  <link rel="stylesheet" href="game.css">
+  <link rel="stylesheet" href="./styles/game.css">
+  <link rel="stylesheet" href="./styles/prompt.css">
 </head>
 <body onblur="pause()" onresize="resizeGame()">
 	<div id="gameContainer">
@@ -39,6 +40,15 @@
 			<div id="controlsTooltip">Use <mark>WASD</mark> or <mark>Arrow Keys</mark> to move around.<br>Click <mark>Left Mouse Button</mark> to shoot in the direction of the mouse pointer.<br>Press <mark>P</mark> or <mark>ESC</mark> to pause.</div>
 		</div>
 	</div>
+	<div id="promptContainer">
+		<div id="promptBox">
+			<img id="promptCloseButton" src="./assets/button_close.svg" alt="close"/>
+			<label id="promptMessage" for="promptInput">I'm just a prompt box!</label>
+			<input id="promptInput" type="text" name="promptInput" maxlength="30">
+			<button class="menuButton" id="promptSubmitButton">Submit</button>
+		</div>
+	</div>
+	<script src="./utils/prompt.js" type="text/javascript"></script>
 	<script src="./utils/storage.js" type="text/javascript"></script>
 	<script src="./utils/collisions.js" type="text/javascript"></script>
 	<script src="game.js" type="text/javascript"></script>

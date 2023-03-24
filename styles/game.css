@@ -1,10 +1,10 @@
 body {
-	background: url("assets/menu_backgroung.png") no-repeat center fixed;
+	background: url("../assets/menu_backgroung.png") no-repeat center fixed;
 	background-size: cover;
 	min-height: 100%;
 	margin: 0;
 	user-select: none;
-	cursor: url("assets/cursor.svg"), auto;
+	cursor: url("../assets/cursor.svg"), auto;
 }
 
 canvas {
@@ -35,7 +35,7 @@ canvas {
 
 #gameWindow {
 	z-index: 2;
-	cursor: url("assets/cursor_crosshair.svg") 16 16, crosshair;
+	cursor: url("../assets/cursor_crosshair.svg") 16 16, crosshair;
 }
 
 #gameInfo {
@@ -135,7 +135,7 @@ canvas {
 	width: 70%;
 	padding: 10px;
 	text-shadow: 1px 1px black;
-	cursor: url("assets/cursor_pointer.svg"), pointer;
+	cursor: url("../assets/cursor_pointer.svg"), pointer;
 	box-shadow: 0 0 10px black;
 	display: flex;
 	flex-flow: column;
@@ -184,7 +184,7 @@ canvas {
 }
 
 .selectionItem + label {
-	cursor: url("assets/cursor_pointer.svg"), pointer;
+	cursor: url("../assets/cursor_pointer.svg"), pointer;
 	background: rgba(130, 125, 125, 0.2);
 	border: groove thick red;
 	backdrop-filter: blur(40px);

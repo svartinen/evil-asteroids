@@ -4,6 +4,7 @@ const saveGame = "saveGame";
 const highscoresPerDifficulty = 5;
 const difficulties = ["easy", "medium", "hard"];
 const savedDifficulty = "savedDifficulty";
+const promptBox = new customPrompt();
 
 window.onload = setDifficulty();
 
@@ -29,22 +30,24 @@ function checkScore(score, difficulty) {
     }
     
     if (score > lowestScore) {
-        var name = "";
-        while (name == "" || (name != null && name.length > 30)) {
-            name = window.prompt("Congratulations! You've reached a new high score. Please, enter your name (max. 30 characters):");
-        }
-        if (name == null) name = "Anonymous Spacer";
+        const input = promptBox.prompt("Congratulations! You've reached a new high score. Please, enter your name (max. 30 characters):");
         
-        const newScore = {score, name};
+        const saveScore = () => {
+            input.then((name) => {
+                if (name == null) name = "Anonymous Spacer";
+                const newScore = {score, name};
         
-        save[difficulty].push(newScore);
-        save[difficulty].sort((score1, score2) => score2.score - score1.score);
-        save[difficulty].splice(highscoresPerDifficulty);
+                save[difficulty].push(newScore);
+                save[difficulty].sort((score1, score2) => score2.score - score1.score);
+                save[difficulty].splice(highscoresPerDifficulty);
         
-        window.localStorage.setItem(saveGame, JSON.stringify(save));
-        return true;
+                window.localStorage.setItem(saveGame, JSON.stringify(save));
+                
+            });
+        };
+        
+        saveScore();
     }
-    return false;
 }
 
 function showHighscores() {
